@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elder Care Navigator — Toronto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --navy:#1a2744;--slate:#2d3f5e;--teal:#2a7f7f;--teal-l:#3aa6a6;--teal-p:#e8f4f4;
+  --gold:#c4973a;--gold-l:#e8b855;--gold-p:#fdf5e8;
+  --cream:#f7f4ee;--warm:#fdfaf5;--text:#1e2530;--muted:#5a6478;--border:#ddd8cc;
+  --green:#2e7d5a;--green-p:#e8f4ec;--red:#b03232;--red-p:#faeaea;
+  --orange:#c26a20;--orange-p:#fdf0e4;--purple:#5a3d8a;--purple-p:#f0ebfa;
+  --blue:#2563a8;--blue-p:#eef4fb;
+  --shadow:0 2px 12px rgba(26,39,68,.09);--shadow-lg:0 6px 28px rgba(26,39,68,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);font-size:15px;line-height:1.65;}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--navy) 0%,#243558 60%,var(--slate) 100%);color:white;padding:20px 40px 16px;border-bottom:3px solid var(--gold);}
+header h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;}
+.hdr-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px;}
+.hdr-left{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
+.last-updated{font-size:.75rem;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 10px;border-radius:12px;}
+.progress-bar{display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(255,255,255,.7);}
+.progress-bar .num{background:var(--gold);color:var(--navy);font-weight:700;padding:2px 8px;border-radius:10px;font-size:.72rem;}
+
+/* EMERGENCY BAR */
+.emergency-bar{background:var(--red);color:white;padding:8px 40px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;font-size:.82rem;}
+.emergency-bar a{color:white;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+.emergency-bar a:hover{text-decoration:underline;}
+.emergency-bar .label{font-weight:400;opacity:.85;}
+
+/* SOURCE FILTERS */
+.source-filters{background:var(--navy);padding:8px 40px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.1);}
+.source-filters .lbl{font-size:.72rem;color:rgba(255,255,255,.5);margin-right:5px;}
+.sbadge{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .2s;border:2px solid transparent;}
+.sbadge:hover{transform:scale(1.05);}
+.sbadge.active{border-color:white;}
+.sbadge.fr{background:#e8f4ec;color:#2e7d5a;}
+.sbadge.br{background:#eef4fb;color:#2563a8;}
+.sbadge.bo{background:#fdf5e8;color:#7a4d10;}
+.sbadge.me{background:#f0ebfa;color:#5a3d8a;}
+.sbadge.ex{background:#fdf0e4;color:#c26a20;}
+.sbadge.all{background:rgba(255,255,255,.15);color:white;}
+
+/* NAV */
+nav{background:var(--navy);display:flex;overflow-x:auto;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:100;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+nav button{background:none;border:none;color:rgba(255,255,255,.52);padding:12px 14px 10px;font-family:'Source Sans 3',sans-serif;font-size:.81rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+nav button:hover{color:rgba(255,255,255,.88);}
+nav button.active{color:var(--gold-l);border-bottom-color:var(--gold-l);}
+
+/* TABS */
+.tab{display:none;padding:28px 40px 80px;max-width:1200px;margin:0 auto;}
+.tab.active{display:block;}
+@media(max-width:700px){header{padding:16px;}.tab{padding:16px 14px 60px;}.emergency-bar,.source-filters{padding:8px 16px;}}
+
+/* TYPOGRAPHY */
+h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--navy);margin-bottom:5px;font-weight:700;}
+h3{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--slate);margin-bottom:8px;}
+.s-intro{color:var(--muted);margin-bottom:18px;max-width:740px;font-size:.9rem;}
+.tab-purpose{display:inline-block;background:var(--teal-p);color:var(--teal);font-size:.75rem;font-weight:600;padding:3px 11px;border-radius:20px;margin-bottom:10px;border:1px solid rgba(42,127,127,.2);}
+
+/* SORT/FILTER BAR - ULTRA COMPACT */
+.filter-bar{background:white;border:1px solid var(--border);border-radius:4px;padding:4px 10px;margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;box-shadow:var(--shadow);font-size:.75rem;}
+.filter-bar label{font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+.filter-bar select{border:1px solid var(--border);border-radius:3px;padding:2px 4px;font-size:.75rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
+.filter-bar select:focus{outline:none;border-color:var(--teal);}
+.filter-bar .sep{width:1px;height:16px;background:var(--border);}
+.filter-bar input[type=text]{border:1px solid var(--border);border-radius:3px;padding:2px 6px;font-size:.75rem;width:110px;}
+.filter-bar input[type=text]:focus{outline:none;border-color:var(--teal);}
+
+/* FACILITY CARDS */
+.fgrid{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;}
+.tier-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:2px solid var(--border);margin-top:20px;}
+.tier-hdr:first-child{margin-top:0;}
+.tier-hdr .t-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--navy);}
+.tier-hdr .t-cost{font-size:.77rem;color:var(--muted);background:white;border:1px solid var(--border);padding:2px 9px;border-radius:11px;margin-left:auto;}
+
+.fcard{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:16px 20px;box-shadow:var(--shadow);border-left:4px solid transparent;transition:all .2s;}
+.fcard:hover{box-shadow:var(--shadow-lg);}
+.fcard.t1{border-left-color:var(--green);}
+.fcard.t2{border-left-color:var(--blue);}
+.fcard.t3{border-left-color:var(--gold);}
+.fcard.hidden{display:none;}
+
+.ftop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.fname{font-size:1rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.fmeta{font-size:.8rem;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.fmeta a{color:var(--teal);text-decoration:none;font-weight:500;}
+.fmeta a:hover{text-decoration:underline;}
+.fmeta .call-btn{background:var(--green);color:white;padding:2px 8px;border-radius:12px;font-size:.72rem;font-weight:600;text-decoration:none;}
+.fmeta .call-btn:hover{background:var(--teal);}
+.fmeta .map-btn{background:var(--blue);color:white;padding:2px 8px;border-radius:12px;font-size:.72rem;font-weight:600;text-decoration:none;}
+.fmeta .map-btn:hover{background:var(--slate);}
+
+.fpills{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.cpill{background:var(--slate);color:white;padding:3px 10px;border-radius:18px;font-size:.74rem;font-weight:700;white-space:nowrap;}
+.cpill.est{background:var(--orange);font-size:.68rem;}
+.cpill.conf{background:var(--green);font-size:.68rem;}
+.spill{background:var(--gold-p);color:var(--orange);border:1px solid #e8c882;padding:2px 9px;border-radius:18px;font-size:.73rem;font-weight:700;}
+
+.stag{display:inline-flex;align-items:center;font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:9px;letter-spacing:.03em;text-transform:uppercase;}
+.stag.fr{background:#e8f4ec;color:#2e7d5a;}
+.stag.br{background:#eef4fb;color:#2563a8;}
+.stag.bo{background:#fdf5e8;color:#7a4d10;}
+.stag.me{background:#f0ebfa;color:#5a3d8a;}
+.stag.ex{background:#fdf0e4;color:#c26a20;}
+
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:11px;background:#e8eef8;color:var(--slate);border:1px solid #ccd8ee;}
+
+.fbody{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-top:10px;}
+@media(max-width:640px){.fbody{grid-template-columns:1fr;}}
+.fbt{font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.fbt.pros{color:var(--green);}.fbt.cons{color:var(--red);}.fbt.cpl{color:var(--purple);}.fbt.wl{color:var(--slate);}
+ul.dots{list-style:none;padding:0;}
+ul.dots li{padding:2px 0 2px 12px;position:relative;font-size:.83rem;}
+ul.dots li::before{content:'•';position:absolute;left:0;color:var(--teal);font-weight:700;}
+
+.wchip{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:600;padding:2px 9px;border-radius:11px;margin-top:3px;}
+.wc-l{background:var(--red-p);color:var(--red);}
+.wc-m{background:var(--orange-p);color:var(--orange);}
+.wc-s{background:var(--green-p);color:var(--green);}
+.wc-o{background:var(--blue-p);color:var(--blue);}
+
+.conflict{background:var(--orange-p);color:var(--orange);border:1px solid #e8c882;border-radius:6px;padding:5px 10px;font-size:.77rem;margin:6px 0;font-style:italic;}
+
+/* COLLAPSIBLE SECTIONS */
+.fac-section{margin-top:10px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.fac-section summary{padding:8px 12px;background:var(--cream);cursor:pointer;font-size:.8rem;font-weight:600;color:var(--slate);list-style:none;display:flex;align-items:center;gap:6px;}
+.fac-section summary::-webkit-details-marker{display:none;}
+.fac-section summary::before{content:'▶';font-size:.65rem;transition:transform .2s;}
+.fac-section[open] summary::before{transform:rotate(90deg);}
+.fac-section .sec-body{padding:10px 12px;background:white;font-size:.82rem;}
+.fac-section .sec-body p{margin-bottom:6px;}
+.fac-section .sec-body p:last-child{margin-bottom:0;}
+.fac-section.details summary{background:var(--blue-p);color:var(--blue);}
+.fac-section.feedback summary{background:var(--green-p);color:var(--green);}
+.fac-section .sec-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px;}
+
+/* BOXES */
+.box{border-radius:8px;padding:12px 16px;font-size:.85rem;margin-bottom:14px;}
+.box.info{background:var(--blue-p);border:1px solid #a8c8f0;color:#1a4e8a;}
+.box.warn{background:var(--gold-p);border:1px solid #e8d0a0;color:#7a4d10;}
+.box.success{background:var(--green-p);border:1px solid #a8d4b7;color:#1f6b3e;}
+.box.urgent{background:var(--red-p);border:1px solid #e8b8b8;color:var(--red);}
+.quiet-note{font-size:.8rem;color:var(--muted);font-style:italic;margin:14px 0;padding:10px 14px;border-left:2px solid var(--border);background:rgba(248,245,239,.6);border-radius:0 5px 5px 0;}
+.divider{border:none;border-top:1px solid var(--border);margin:22px 0;}
+
+/* BUTTONS */
+.btn{border:none;padding:8px 16px;border-radius:6px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all .2s;}
+.btn-p{background:var(--teal);color:white;}.btn-p:hover{background:var(--teal-l);}
+.btn-s{background:white;color:var(--slate);border:1px solid var(--border);}.btn-s:hover{border-color:var(--teal);color:var(--teal);}
+.btn-d{background:white;color:var(--red);border:1px solid #e8b8b8;font-size:.75rem;padding:4px 10px;}.btn-d:hover{background:var(--red-p);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:white;border-radius:12px;max-width:600px;width:100%;max-height:80vh;overflow:auto;box-shadow:var(--shadow-lg);}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-header h3{margin:0;}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:20px;}
+.modal-body textarea{width:100%;min-height:150px;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:'Source Sans 3',sans-serif;font-size:.9rem;resize:vertical;}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* TRACKER TABLE */
+.tr-wrap{overflow-x:auto;}
+table.tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+table.tbl th{background:var(--navy);color:white;padding:10px 12px;text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.04em;white-space:nowrap;}
+table.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+table.tbl tr:nth-child(even) td{background:rgba(248,245,239,.5);}
+table.tbl .actions{display:flex;gap:6px;align-items:center;}
+
+.sp{display:inline-block;font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.03em;white-space:nowrap;}
+.sp-star{background:#2e7d5a;color:white;}
+.sp-like{background:#3aa6a6;color:white;}
+.sp-qx{background:var(--orange);color:white;}
+.sp-no{background:var(--red);color:white;}
+.sp-pend{background:#888;color:white;}
+.sp-booked{background:var(--blue);color:white;}
+
+.sdot{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:white;}
+.s5{background:#2e7d5a;}.s4{background:#3aa6a6;}.s3{background:var(--orange);}.s2{background:#c26a20;}.s1{background:var(--red);}.s0{background:#ccc;color:#666;}
+
+/* ADD PANEL */
+.add-panel{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:18px;box-shadow:var(--shadow);}
+.add-panel summary{cursor:pointer;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--teal);list-style:none;}
+.add-panel summary::-webkit-details-marker{display:none;}
+.add-panel .inner{margin-top:14px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(max-width:660px){.fg3,.fg2{grid-template-columns:1fr;}}
+label.fl{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+input[type=text],input[type=date],select,textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 11px;font-size:.85rem;font-family:'Source Sans 3',sans-serif;color:var(--text);background:white;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);}
+textarea{min-height:60px;resize:vertical;}
+.star-row{display:flex;gap:3px;}
+.star-row span{font-size:1.3rem;cursor:pointer;color:#ddd;transition:color .15s;user-select:none;}
+.star-row span.lit{color:var(--gold);}
+
+/* EVAL */
+.eval-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:740px){.eval-grid{grid-template-columns:1fr;}}
+.eval-card{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:var(--shadow);}
+.eval-card h3{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.eval-instr{background:var(--blue-p);border:1px solid #a8c8f0;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.84rem;color:#1a4e8a;}
+.eval-instr strong{color:#0e3266;}
+.sl-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sl-row label{flex:0 0 140px;font-size:.8rem;}
+.sl-row input[type=range]{flex:1;accent-color:var(--teal);}
+.sl-val{flex:0 0 24px;text-align:right;font-weight:700;color:var(--teal);font-size:.85rem;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-bottom:20px;}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr;}}
+.card{background:var(--warm);border:1px solid var(--border);border-radius:9px;padding:14px 17px;box-shadow:var(--shadow);}
+.card h4{font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.card .meta{font-size:.76rem;color:var(--muted);margin-bottom:5px;}
+.card .meta a{color:var(--teal);text-decoration:none;}
+.card p{font-size:.83rem;}
+
+/* STAGES */
+.stage-item{display:flex;gap:14px;margin-bottom:2px;}
+.stage-conn{display:flex;flex-direction:column;align-items:center;flex:0 0 32px;}
+.stage-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:white;flex-shrink:0;}
+.stage-line{width:2px;flex:1;min-height:18px;background:var(--border);margin:0 auto;}
+.stage-body{flex:1;background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px;box-shadow:var(--shadow);}
+.stage-body.us{border-color:var(--red);background:#fffaf8;}
+.stage-body.ws{border-color:var(--orange);}
+.stage-title{font-size:.93rem;font-weight:700;margin-bottom:2px;}
+.stage-sub{font-size:.76rem;color:var(--muted);margin-bottom:6px;}
+.stage-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;}
+@media(max-width:640px){.stage-cols{grid-template-columns:1fr;}}
+.mini-t{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px;}
+
+/* ENTITLEMENTS */
+.ent-card{background:var(--warm);border:1px solid var(--border);border-radius:9px;padding:14px 17px;box-shadow:var(--shadow);}
+.ent-card .elv{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.elv.prov{color:var(--blue);}.elv.fed{color:var(--purple);}.elv.city{color:var(--green);}
+.ent-card h4{font-size:.91rem;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.ent-card .elig{font-size:.74rem;background:var(--cream);border-radius:5px;padding:3px 7px;color:var(--muted);margin-bottom:5px;display:inline-block;}
+.ent-card p{font-size:.82rem;}
+
+/* DECISION */
+.dq-card{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:16px;box-shadow:var(--shadow);}
+.dq-card h3{margin-bottom:10px;}
+.dq-row{margin-bottom:10px;}
+.pri-item{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--border);}
+.pri-item:last-child{border-bottom:none;}
+.pri-num{flex:0 0 28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:white;flex-shrink:0;}
+.p1{background:var(--red);}.p2{background:var(--orange);}.p3{background:var(--gold);}.pn{background:var(--teal);}
+.pri-text h4{font-size:.88rem;font-weight:700;margin-bottom:1px;}
+.pri-text p{font-size:.8rem;color:var(--muted);}
+
+/* CHECKLIST */
+.ck-section{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.ck-item{display:flex;align-items:flex-start;gap:9px;padding:6px 4px;cursor:pointer;border-radius:4px;transition:background .15s;border-bottom:1px solid rgba(0,0,0,.04);}
+.ck-item:last-child{border-bottom:none;}
+.ck-item:hover{background:rgba(42,127,127,.04);}
+.ck-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);margin-top:2px;cursor:pointer;flex-shrink:0;}
+.ck-lbl{font-size:.85rem;}
+.ck-lbl.done{text-decoration:line-through;color:var(--muted);}
+.ck-sub{font-size:.74rem;color:var(--muted);display:block;margin-top:1px;}
+.uflag{display:inline-block;background:var(--red-p);color:var(--red);font-size:.66rem;font-weight:700;padding:1px 6px;border-radius:7px;margin-left:5px;letter-spacing:.03em;text-transform:uppercase;}
+
+/* SHARE */
+.share-card{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:var(--shadow);}
+.share-card h3{margin-bottom:8px;}
+.notes-ta{width:100%;min-height:80px;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'Source Sans 3',sans-serif;font-size:.85rem;color:var(--text);resize:vertical;background:white;margin-top:5px;}
+.notes-ta:focus{outline:none;border-color:var(--teal);}
+
+/* FAMILY CARD */
+.family-ref{background:linear-gradient(135deg,var(--navy),var(--slate));color:white;border-radius:10px;padding:18px 22px;margin-bottom:14px;}
+.family-ref h3{color:white;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:8px;}
+.family-ref .row{display:flex;gap:20px;flex-wrap:wrap;}
+.family-ref .col{flex:1;min-width:200px;}
+.family-ref label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.6);display:block;margin-bottom:2px;}
+.family-ref input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;border-radius:5px;padding:6px 10px;width:100%;font-size:.85rem;margin-bottom:8px;}
+.family-ref input::placeholder{color:rgba(255,255,255,.4);}
+.family-ref input:focus{outline:none;border-color:var(--gold);}
+
+/* COST TABLE */
+.cost-tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin:10px 0;}
+.cost-tbl th{background:var(--cream);color:var(--slate);padding:8px 12px;text-align:left;font-weight:700;font-size:.74rem;border-bottom:2px solid var(--border);}
+.cost-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.cost-tbl tr:last-child td{border-bottom:none;}
+
+@media print{
+  nav,.emergency-bar,.source-filters,.filter-bar{display:none;}
+  .tab{display:block!important;page-break-after:always;}
+  header{padding:15px 20px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Elder Care Navigator</h1>
+  <div class="hdr-row">
+    <div class="hdr-left">
+      <span class="last-updated">Last reviewed: May 2026</span>
+      <div class="progress-bar">
+        <span class="num" id="prog-visited">0</span> visited
+        <span class="num" id="prog-booked">0</span> tours booked
+        <span class="num" id="prog-ruled">0</span> ruled out
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="emergency-bar">
+  <span class="label">Key contacts:</span>
+  <a href="tel:3102222">📞 Ontario Health atHome: 310-2222</a>
+  <a href="tel:4163226560">📞 Alzheimer Society Toronto: 416-322-6560</a>
+  <a href="tel:211">📞 Crisis/Info: 211</a>
+</div>
+
+<div class="source-filters">
+  <span class="lbl">Filter by source:</span>
+  <span class="sbadge all active" onclick="filterSrc('all')">All</span>
+  <span class="sbadge fr" onclick="filterSrc('fr')">👩 Friend</span>
+  <span class="sbadge br" onclick="filterSrc('br')">👨‍⚕ Brother</span>
+  <span class="sbadge bo" onclick="filterSrc('bo')">↔ Both</span>
+  <span class="sbadge me" onclick="filterSrc('me')">✎ Mine</span>
+  <span class="sbadge ex" onclick="filterSrc('ex')">🔍 Exploring</span>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="showTab('facilities',this)">🏠 Facilities</button>
+  <button onclick="showTab('tracker',this)">📋 My Tracker</button>
+  <button onclick="showTab('decision',this)">🧭 What Next</button>
+  <button onclick="showTab('stages',this)">📈 Stages</button>
+  <button onclick="showTab('homecare',this)">🏡 Home Care</button>
+  <button onclick="showTab('entitlements',this)">⚖ Entitlements</button>
+  <button onclick="showTab('resources',this)">🔗 Resources</button>
+  <button onclick="showTab('share',this)">📤 Share</button>
+  <button onclick="showTab('evaluator',this)">⭐ Evaluate</button>
+</nav>
+
+<!-- NOTES MODAL -->
+<div class="modal-overlay" id="notes-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Notes</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="modal-notes" placeholder="Add your notes here..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-s" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveModalNotes()">Save Notes</button>
+    </div>
+  </div>
+</div>
+
+<!-- COST MODAL -->
+<div class="modal-overlay" id="cost-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Update Cost</h3>
+      <button class="modal-close" onclick="closeCostModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px;">
+        <label class="fl">Cost Range</label>
+        <input type="text" id="cost-input" placeholder="e.g. $7,500-$9,000/mo">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label class="fl">Date Confirmed</label>
+        <input type="date" id="cost-date">
+      </div>
+      <div class="box info" style="margin-bottom:0;">Once confirmed, this cost will show a ✓ with the date you verified it.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-s" onclick="closeCostModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveCost()">Confirm Cost</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
+<!-- TAB 1: FACILITIES -->
+<div id="tab-facilities" class="tab active">
+  <div class="tab-purpose">Browse & Learn — read before visits, share with family</div>
+  <h2>Toronto & GTA Facilities Guide</h2>
+  <p class="s-intro">Compiled from two independent sources: a friend's ground-level family research (visits, scores, gut reactions) and a physician's curated rated list. Where sources overlap, both perspectives appear on the same card. Costs are approximate 2025-2026 figures.</p>
+
+  <div class="box info"><strong>How Ontario LTC works:</strong> Government-funded Long-Term Care requires eligibility assessment through <strong>Ontario Health atHome — call 310-2222</strong>. You may list up to 5 homes. Private retirement homes are applied to directly. These are completely separate streams with separate waitlists.</div>
+
+  <div class="quiet-note">You didn't plan to become an expert in elder care. Nobody does. The fact that you're here, building a plan — that is love made practical.</div>
+
+  <div style="margin-bottom:14px;">
+    <div class="filter-bar">
+      <label>Sort:</label>
+      <select id="fac-sort" onchange="renderFacs()">
+        <option value="tier">Tier</option>
+        <option value="rating">Rating</option>
+        <option value="cost-low">Cost ↑</option>
+        <option value="cost-high">Cost ↓</option>
+      </select>
+      <div class="sep"></div>
+      <label>Show:</label>
+      <select id="fac-filter" onchange="renderFacs()">
+        <option value="all">All</option>
+        <option value="couples">Couples</option>
+        <option value="visited">Visited</option>
+        <option value="shortlist">4+ Stars</option>
+      </select>
+      <div class="sep"></div>
+      <input type="text" id="fac-search" placeholder="🔍 Search..." oninput="renderFacs()">
+    </div>
+  </div>
+
+  <div class="box warn" style="font-size:.82rem;padding:10px 14px;"><strong>Costs require confirmation.</strong> Call each facility directly to verify current rates.</div>
+
+  <div id="fac-out"></div>
+</div>
+
+<!-- TAB 2: TRACKER -->
+<div id="tab-tracker" class="tab">
+  <div class="tab-purpose">Your Working Document — log visits, track follow-ups</div>
+  <h2>My Facility Tracker</h2>
+  <p class="s-intro">Every facility your network has researched. Add new ones, update costs after calling, expand notes. Click any cost to verify and update it.</p>
+
+  <div style="margin-bottom:14px;">
+    <div class="filter-bar">
+      <label>Sort:</label>
+      <select id="tr-sort" onchange="renderTracker()">
+        <option value="name">Name</option>
+        <option value="score">Score</option>
+        <option value="status">Status</option>
+      </select>
+      <div class="sep"></div>
+      <label>Show:</label>
+      <select id="tr-filter" onchange="renderTracker()">
+        <option value="all">All</option>
+        <option value="visited">Visited</option>
+        <option value="pending">Pending</option>
+        <option value="shortlist">4+ Stars</option>
+      </select>
+      <div class="sep"></div>
+      <input type="text" id="tr-search" placeholder="🔍 Search..." oninput="renderTracker()">
+    </div>
+  </div>
+  
+  <details class="add-panel" id="add-panel">
+    <summary>+ Add a New Facility</summary>
+    <div class="inner">
+      <div class="fg3">
+        <div><label class="fl">Facility Name *</label><input type="text" id="af-name" placeholder="e.g. Sunrise Memory Care"></div>
+        <div><label class="fl">Location / Address</label><input type="text" id="af-loc" placeholder="123 Main St, Toronto"></div>
+        <div><label class="fl">Phone</label><input type="text" id="af-phone" placeholder="416-xxx-xxxx"></div>
+      </div>
+      <div class="fg3">
+        <div><label class="fl">Website</label><input type="text" id="af-web" placeholder="https://..."></div>
+        <div><label class="fl">Cost Range</label><input type="text" id="af-cost" placeholder="$4,500–$7,000/mo"></div>
+        <div><label class="fl">Tier</label>
+          <select id="af-tier">
+            <option value="1">Tier 1 — Public / Not-for-Profit</option>
+            <option value="2" selected>Tier 2 — Private Retirement</option>
+            <option value="3">Tier 3 — Premium Private</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg2">
+        <div><label class="fl">Source — who told you?</label>
+          <select id="af-src">
+            <option value="me">My Own Research</option>
+            <option value="fr">Friend's Research</option>
+            <option value="br">Brother's List</option>
+            <option value="ex">Exploring (To Research)</option>
+            <option value="ot">Other</option>
+          </select>
+        </div>
+        <div><label class="fl">Status</label>
+          <select id="af-status">
+            <option value="pend">Not Yet Visited</option>
+            <option value="booked">Tour Booked</option>
+            <option value="qx">Visited — Questions Remain</option>
+            <option value="like">Visited & Liked</option>
+            <option value="star">Standout</option>
+            <option value="no">No — Ruled Out</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg2">
+        <div><label class="fl">Your Score (tap stars)</label>
+          <div class="star-row" id="af-stars">
+            <span onclick="setStar(1)">★</span><span onclick="setStar(2)">★</span>
+            <span onclick="setStar(3)">★</span><span onclick="setStar(4)">★</span>
+            <span onclick="setStar(5)">★</span>
+          </div>
+          <input type="hidden" id="af-score" value="0">
+        </div>
+        <div><label class="fl">Waitlist Info</label><input type="text" id="af-wait" placeholder="150 beds / 400 waitlist"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label class="fl">Notes</label>
+        <textarea id="af-notes" placeholder="Visit impressions, contacts, questions..."></textarea>
+      </div>
+      <button class="btn btn-p" onclick="addFac()">Add to Tracker</button>
+    </div>
+  </details>
+  
+  <div class="tr-wrap">
+    <table class="tbl">
+      <thead><tr>
+        <th>Facility</th>
+        <th>Source</th>
+        <th>Status</th>
+        <th>Score</th>
+        <th>Cost</th>
+        <th>Waitlist</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="tr-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 3: EVALUATOR -->
+<div id="tab-evaluator" class="tab">
+  <div class="tab-purpose">Decision Support — score facilities after visits</div>
+  <h2>Evaluate & Rank</h2>
+  <p class="s-intro">Score facilities you've researched on six dimensions. Adjust weights to reflect your family's priorities.</p>
+  
+  <div class="eval-instr">
+    <strong>How to use:</strong> 1) Select a facility. 2) Move sliders to score it based on your impression (1=poor, 10=excellent). 3) Click "Add to Rankings." 4) Adjust "What Matters" weights to see how rankings change based on your priorities.
+  </div>
+  
+  <div class="eval-grid">
+    <div class="eval-card">
+      <h3>Score a Facility</h3>
+      <div style="margin-bottom:10px;">
+        <label class="fl">Select Facility</label>
+        <select id="eval-sel"><option value="">— choose any facility —</option></select>
+      </div>
+      <div id="eval-sliders"></div>
+      <button class="btn btn-p" onclick="addEval()" style="margin-top:8px;">Add to Rankings</button>
+    </div>
+    <div class="eval-card">
+      <h3>What Matters to Your Family</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px;">Higher weight = more important in final score</p>
+      <div id="wt-sliders"></div>
+    </div>
+  </div>
+  
+  <div id="eval-out" style="display:none;">
+    <h3 style="margin-bottom:8px;">Rankings</h3>
+    <div class="tr-wrap">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Facility</th><th>Weighted Score</th><th>Dementia</th><th>Couples</th><th>Cost</th><th>Cultural</th><th>Location</th><th>Atmosphere</th><th></th></tr></thead>
+        <tbody id="rank-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: HOME CARE -->
+<div id="tab-homecare" class="tab">
+  <div class="tab-purpose">Before Placement — what staying home actually requires</div>
+  <h2>Home Care: The Real Picture</h2>
+  <p class="s-intro">Most families underestimate what home care involves. Here's the unvarnished picture.</p>
+  <div class="box info" style="font-size:.82rem;"><strong>Sources:</strong> Ontario Health atHome, Alzheimer Society of Canada, Toronto Dementia Network. Costs are Toronto-area estimates (2025-2026).</div>
+  <div class="quiet-note">"Keeping someone home" is not free, not simple, and not sustainable forever. Knowing this helps you plan well.</div>
+  
+  <h3>Room-by-Room Modifications</h3>
+  <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">What physically needs to change, with Toronto costs (2025-2026).</p>
+  <div class="g3" id="retro-grid"></div>
+  
+  <hr class="divider">
+  <h3>Dementia Safety Equipment</h3>
+  <div class="box warn"><strong>Wandering is the #1 safety risk at Stage 5+.</strong> Door alarms and GPS trackers are essential.</div>
+  <div class="g2" id="safety-eq"></div>
+  
+  <hr class="divider">
+  <h3>Government-Funded Home Care — What You Get</h3>
+  <div class="box info">Ontario Health atHome provides PSW and nursing. Reality: most Stage 5-6 families get far fewer hours than needed.</div>
+  <div class="tr-wrap"><table class="cost-tbl" id="govt-tbl"></table></div>
+  
+  <hr class="divider">
+  <h3>Private Home Care — Realistic Costs</h3>
+  <div class="tr-wrap"><table class="cost-tbl" id="priv-tbl"></table></div>
+  
+  <hr class="divider">
+  <h3>Home Care Agencies</h3>
+  <div class="g2" id="agencies"></div>
+  
+  <hr class="divider">
+  <h3>Adult Day Programs</h3>
+  <div class="box success">Day programs give stimulation and social connection — and real respite for caregivers. Often delays LTC by months or years.</div>
+  <div class="g2" id="day-progs"></div>
+  
+  <hr class="divider">
+  <h3>⚠ When Home Care Is No Longer Enough</h3>
+  <div class="box urgent">Multiple checks below = time to accelerate LTC planning.</div>
+  <div class="g3">
+    <div class="ck-section"><h3 style="font-size:.9rem;padding:8px 12px;margin:0;background:var(--red-p);color:var(--red);border-bottom:1px solid var(--border);">Safety Signals</h3><div id="ck-safe"></div></div>
+    <div class="ck-section"><h3 style="font-size:.9rem;padding:8px 12px;margin:0;background:var(--orange-p);color:var(--orange);border-bottom:1px solid var(--border);">Caregiver Capacity</h3><div id="ck-cg"></div></div>
+    <div class="ck-section"><h3 style="font-size:.9rem;padding:8px 12px;margin:0;background:var(--blue-p);color:var(--blue);border-bottom:1px solid var(--border);">Medical & Functional</h3><div id="ck-med"></div></div>
+  </div>
+</div>
+
+<!-- TAB 5: STAGES -->
+<div id="tab-stages" class="tab">
+  <div class="tab-purpose">Context & Preparation — understand progression</div>
+  <h2>Dementia: Stages & Care Progression</h2>
+  <p class="s-intro">Based on the Global Deterioration Scale. Understanding stages gives your family a shared language.</p>
+  <div class="box urgent" id="stage-assessment-box"><strong>Stage Assessment:</strong> <span id="stage-display">Not yet selected. Go to the <a href="#" onclick="showTab('decision',document.querySelector('nav button:nth-child(3)'));return false;" style="color:inherit;text-decoration:underline;">What Next</a> tab to set your loved one's current stage.</span></div>
+  <div class="quiet-note">The stages tell you what the disease is doing. They don't define who your father is.</div>
+  <div id="stage-tl" style="margin-top:16px;"></div>
+  <hr class="divider">
+  <h3>Quick Reference: Setting by Stage</h3>
+  <div class="tr-wrap"><table class="tbl" id="stage-tbl"></table></div>
+</div>
+
+<!-- TAB 6: ENTITLEMENTS -->
+<div id="tab-entitlements" class="tab">
+  <div class="tab-purpose">Money & Rights — programs most families miss</div>
+  <h2>Government Services & Entitlements</h2>
+  <p class="s-intro">Ontario and Canada have significant programs. Most families leave money on the table.</p>
+  <div class="box warn"><strong>Start here:</strong> Ontario Health atHome, 310-2222. Free assessment identifies what you qualify for.</div>
+  
+  <h3>Province of Ontario</h3>
+  <div class="g2" id="prov-ent"></div>
+  <h3>Government of Canada</h3>
+  <div class="g2" id="fed-ent"></div>
+  <h3>City of Toronto</h3>
+  <div class="g2" id="city-ent"></div>
+  <div class="quiet-note">Prioritize by financial impact: Assistive Devices Program, Trillium Drug Program, and Canada Caregiver Credit together save thousands annually.</div>
+</div>
+
+<!-- TAB 7: RESOURCES -->
+<div id="tab-resources" class="tab">
+  <div class="tab-purpose">Practical Sourcing — equipment, suppliers, guidance</div>
+  <h2>Resources & Suppliers</h2>
+  <p class="s-intro">Where to find what you need. Includes how to avoid overspending.</p>
+  <div class="box info"><strong>Before buying:</strong> Check Red Cross Equipment Loan (free) and Assistive Devices Program (75% covered). 1-800-268-6021.</div>
+  
+  <h3>Equipment & Safety Suppliers</h3>
+  <div class="g3" id="equip-res"></div>
+  <h3>Information & Support Organizations</h3>
+  <div class="g3" id="info-res"></div>
+  <h3>Buyer's Guide</h3>
+  <div id="buyers-guide"></div>
+</div>
+
+<!-- TAB 8: DECISION -->
+<div id="tab-decision" class="tab">
+  <div class="tab-purpose">Cut Through Everything — your prioritized next moves</div>
+  <h2>What Should I Do Next?</h2>
+  <p class="s-intro">Answer the questions below. Get your actual priorities in order.</p>
+
+  <div class="g2">
+    <div class="dq-card">
+      <h3>Your Situation</h3>
+      <div class="dq-row"><label class="fl">Stage of dementia</label>
+        <select id="dq-stage">
+          <option value="">— select —</option>
+          <option value="early">Early/Mild — mostly independent</option>
+          <option value="late">Late — full care needed</option>
+          <option value="mod">Moderate — needs daily help</option>
+          <option value="sev">Moderate-Severe — confused, needs supervision</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Primary caregiver</label>
+        <select id="dq-cg">
+          <option value="">— select —</option>
+          <option value="family">Family sharing care</option>
+          <option value="hired">Hired caregivers in place</option>
+          <option value="none">No clear caregiver</option>
+          <option value="spouse">Spouse living together</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Most urgent concern</label>
+        <select id="dq-concern">
+          <option value="">— select —</option>
+          <option value="burnout">Caregiver burnout</option>
+          <option value="cost">Cost — what can we afford</option>
+          <option value="family">Family alignment</option>
+          <option value="info">Need more information</option>
+          <option value="placement">Placement — time to move</option>
+          <option value="safety">Safety — accidents/wandering</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Called Ontario Health atHome?</label>
+        <select id="dq-oha">
+          <option value="">— select —</option>
+          <option value="prog">In progress</option>
+          <option value="no">No — not yet</option>
+          <option value="yes">Yes — coordinator assigned</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Couple staying together priority?</label>
+        <select id="dq-cpl">
+          <option value="">— select —</option>
+          <option value="maybe">Maybe — if possible</option>
+          <option value="no">No — individual placement OK</option>
+          <option value="yes">Yes — must stay together</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="dq-card">
+      <h3>Planning Considerations</h3>
+      <div class="dq-row"><label class="fl">Current living situation</label>
+        <select id="dq-living">
+          <option value="">— select —</option>
+          <option value="hospital">Currently in hospital</option>
+          <option value="home-family">Home with other family</option>
+          <option value="home-spouse">Home with spouse/partner</option>
+          <option value="home-alone">Living alone at home</option>
+          <option value="retirement">Already in retirement home</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Mobility level</label>
+        <select id="dq-mobility">
+          <option value="">— select —</option>
+          <option value="bedridden">Mostly bed-bound</option>
+          <option value="aids">Uses walker/cane</option>
+          <option value="independent">Walks independently</option>
+          <option value="wheelchair">Wheelchair user</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Behaviours of concern</label>
+        <select id="dq-behaviours">
+          <option value="">— select —</option>
+          <option value="aggression">Aggression or resistance to care</option>
+          <option value="mild">Mild — occasional agitation</option>
+          <option value="severe">Multiple challenging behaviours</option>
+          <option value="none">None currently</option>
+          <option value="wandering">Wandering/exit-seeking</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Night-time care needs</label>
+        <select id="dq-night">
+          <option value="">— select —</option>
+          <option value="bathroom">Needs bathroom assistance</option>
+          <option value="constant">Needs constant supervision</option>
+          <option value="none">Sleeps through the night</option>
+          <option value="wanders">Wanders at night</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Monthly budget for care</label>
+        <select id="dq-budget">
+          <option value="">— select —</option>
+          <option value="moderate">$3,000 - $6,000/month</option>
+          <option value="higher">$6,000 - $10,000/month</option>
+          <option value="premium">$10,000+/month (premium options)</option>
+          <option value="ltc-only">LTC rates only (~$2,000-$2,900)</option>
+          <option value="unsure">Not sure yet</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Cultural/language preferences</label>
+        <select id="dq-culture">
+          <option value="">— select —</option>
+          <option value="food">Dietary/cultural food requirements</option>
+          <option value="faith">Faith-based care preferred</option>
+          <option value="multiple">Multiple cultural considerations</option>
+          <option value="none">No specific requirements</option>
+          <option value="language">Specific language needed</option>
+        </select>
+      </div>
+      <div class="dq-row"><label class="fl">Power of Attorney in place?</label>
+        <select id="dq-poa">
+          <option value="">— select —</option>
+          <option value="no">No — not yet done</option>
+          <option value="unsure">Not sure</option>
+          <option value="partial">Partial — only one type</option>
+          <option value="both">Yes — both Property and Care</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:12px;">
+    <button class="btn btn-p" onclick="genPri()" style="padding:10px 30px;">Generate Priority List</button>
+  </div>
+  
+  <div id="pri-out" style="display:none;">
+    <h3>Your Priority List</h3>
+    <p class="s-intro">Do #1 before #2. One step at a time.</p>
+    <div class="dq-card"><div id="pri-items"></div></div>
+    <div class="quiet-note" id="pri-note"></div>
+  </div>
+</div>
+
+<!-- TAB 8: SHARE -->
+<div id="tab-share" class="tab">
+  <div class="tab-purpose">Family Alignment — notes, checklists, coordination</div>
+  <h2>Review & Share</h2>
+  <p class="s-intro">Prepare for family conversations and facility tours.</p>
+
+  <!-- TOUR MODE -->
+  <div class="share-card" style="border:2px solid var(--teal);background:var(--teal-p);">
+    <h3>🚶 I'm On a Tour Right Now</h3>
+    <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px;">Select facility, capture impressions, and update tracker instantly.</p>
+    <div class="fg2">
+      <div>
+        <label class="fl">Which facility?</label>
+        <select id="tour-facility" onchange="loadTourFacility()">
+          <option value="">— select facility —</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">Your rating (1-5)</label>
+        <div id="tour-stars" class="star-row">
+          <span onclick="setTourStar(1)">★</span>
+          <span onclick="setTourStar(2)">★</span>
+          <span onclick="setTourStar(3)">★</span>
+          <span onclick="setTourStar(4)">★</span>
+          <span onclick="setTourStar(5)">★</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="fl">Quick impressions</label>
+      <textarea id="tour-notes" class="notes-ta" style="min-height:80px;" placeholder="First impressions, things you noticed, questions that came up, how staff treated you..."></textarea>
+    </div>
+    <div class="fg3" style="margin-top:10px;">
+      <div>
+        <label class="fl">Status after tour</label>
+        <select id="tour-status">
+          <option value="">— select —</option>
+          <option value="like">Liked — strong option</option>
+          <option value="qx">Questions — need more info</option>
+          <option value="no">Ruled Out — not a fit</option>
+          <option value="star">★ Standout — top choice</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">Cost quoted (if any)</label>
+        <input type="text" id="tour-cost" placeholder="e.g. $8,500/mo">
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button class="btn btn-p" onclick="saveTourNotes()" style="width:100%;">Save to Tracker</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tour Checklist & Next Steps - Side by Side -->
+  <div class="g2">
+    <div class="share-card">
+      <h3>✅ Tour Checklist</h3>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">Ask all of these. The answers — and how they answer — matter.</p>
+      <div id="tour-ck"></div>
+    </div>
+    <div class="share-card">
+      <h3>📅 Next Steps</h3>
+      <div id="next-steps"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-p" onclick="window.print()">🖨 Print Guide</button>
+    <button class="btn btn-s" onclick="copySum()">📋 Copy Summary</button>
+    <button class="btn btn-s" onclick="saveFamilyData()">💾 Save Family Info</button>
+  </div>
+
+  <!-- Family Quick Reference Card - Moved to bottom -->
+  <div class="family-ref" style="margin-top:20px;">
+    <h3>📋 Family Quick Reference Card</h3>
+    <p style="font-size:.8rem;opacity:.7;margin-bottom:12px;">Bring this info to every tour. Fill in once, use everywhere.</p>
+    <div class="row">
+      <div class="col">
+        <label>Patient Name</label>
+        <input type="text" id="fam-name" placeholder="Full name">
+        <label>Health Card #</label>
+        <input type="text" id="fam-hc" placeholder="XXXX-XXX-XXX">
+        <label>Date of Birth</label>
+        <input type="text" id="fam-dob" placeholder="YYYY-MM-DD">
+      </div>
+      <div class="col">
+        <label>Family Doctor</label>
+        <input type="text" id="fam-doc" placeholder="Dr. Name">
+        <label>Doctor Phone</label>
+        <input type="text" id="fam-docph" placeholder="416-XXX-XXXX">
+        <label>Pharmacy</label>
+        <input type="text" id="fam-pharm" placeholder="Name & location">
+      </div>
+      <div class="col">
+        <label>Emergency Contact</label>
+        <input type="text" id="fam-emerg" placeholder="Name & phone">
+        <label>Key Medications</label>
+        <input type="text" id="fam-meds" placeholder="Main prescriptions">
+        <label>Allergies</label>
+        <input type="text" id="fam-allergy" placeholder="Drug/food allergies">
+      </div>
+    </div>
+  </div>
+
+  <!-- FAMILY DISCUSSION NOTES - Under Construction -->
+  <div class="share-card" style="margin-top:20px;opacity:0.6;position:relative;">
+    <div style="position:absolute;top:10px;right:10px;background:var(--orange);color:white;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:4px;">COMING SOON</div>
+    <h3>📝 Shared Family Discussion Notes</h3>
+    <p style="font-size:.83rem;color:var(--muted);">This feature will allow family members to share notes with each other in real-time. Currently under development.</p>
+    <textarea class="notes-ta" id="family-notes" disabled placeholder="Shared notes feature coming soon — will allow all family members to see and add notes together." style="background:#f0f0f0;cursor:not-allowed;"></textarea>
+  </div>
+
+  <div class="quiet-note" style="margin-top:20px;">You are organizing love into action under pressure. Whatever happens next, building this plan means better care. That matters more than anything.</div>
+</div>
+
+<script>
+// ===================== FACILITY DATA =====================
+const FACS = [
+  // === TIER 1: PUBLIC / NOT-FOR-PROFIT LTC ===
+  {id:'c1',n:'Cardinal Ambrozic Houses of Providence',loc:'3276 St. Clair Ave E, Scarborough',ph:'416-285-3742',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c554',site:'https://unityhealth.to/clinics-services/cardinal-ambrozic-houses-of-providence-long-term-care/',cost:'~$2,100-$2,800/mo',tier:1,src:'fr',status:'star',score:5,bstar:null,beds:'288',wl:'1,152 waitlist',wc:'wc-l',tags:['Unity Health','Dementia Unit','24hr Nursing'],pros:['Family 5/5','Highly organized','Secure dementia unit','Part of Unity Health Toronto'],cons:['Waitlist 1,152','Couples not guaranteed'],cpl:['Shared rooms possible'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Part of Unity Health Toronto</strong> - One of Ontario\'s largest Catholic healthcare networks.</p><p><strong>288 beds</strong> across multiple care areas including a secure dementia unit with specialized programming.</p><p><strong>Programs:</strong> Music therapy, sensory stimulation, gardening, spiritual care, and recreational activities tailored to cognitive abilities.</p><p><strong>Staff:</strong> 24/7 RN coverage, PSWs, recreational therapists, social workers, dietitians, and chaplaincy services.</p><p><strong>Culture:</strong> Catholic heritage with inclusive care for all faiths. Daily mass available. Strong volunteer program.</p>'},
+  {id:'c2',n:'Isabel & Arthur Meighen Manor',loc:'155 Millwood Rd, Toronto',ph:'416-481-9449',web:'https://publicreporting.ltchomes.net/en-ca/File.aspx?RecID=37130&FacilityID=20259',site:'https://salvationarmy.ca/meighenhealth/',cost:'~$2,100-$2,800/mo',tier:1,src:'fr',status:'qx',score:4,bstar:null,beds:'168',wl:'734 waitlist',wc:'wc-l',tags:['Salvation Army','Memory Care','24hr Nursing'],pros:['Family 4/5','Alzheimer/dementia care','Transit accessible'],cons:['Faith orientation','734 waitlist'],cpl:['Confirm directly'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Operated by Salvation Army</strong> - Faith-based non-profit with strong mission of compassionate care.</p><p><strong>168 beds</strong> near Leaside/Davisville area. Good TTC access on Millwood Road.</p><p><strong>Memory Care:</strong> Dedicated Alzheimer/dementia care unit with secure environment and specialized programming.</p><p><strong>Programs:</strong> Spiritual care, music therapy, recreation, pastoral visits. Chapel services available but not mandatory.</p><p><strong>Staff:</strong> 24-hour nursing care, recreation therapists, social workers, chaplains.</p><p><strong>Note:</strong> Faith-based environment - inclusive of all but Christian worship services are offered regularly.</p>'},
+  {id:'c3',n:'True Davidson Acres',loc:'200 Dawes Rd, Toronto',ph:'416-397-0400',web:'https://publicreporting.ltchomes.net/en-ca/File.aspx?RecID=36967&FacilityID=20507',site:'https://www.toronto.ca/community-people/housing-shelter/long-term-care-homes/long-term-care-home-locations/true-davidson-acres/',cost:'~$2,100-$2,800/mo',tier:1,src:'bo',status:'qx',score:3,bstar:4.3,beds:'187',wl:'662 waitlist',wc:'wc-m',tags:['City of Toronto','Individualized Care'],pros:['Brother 4.3★','City operated','Staff positive'],cons:['Family 3/5 - smell noted','Small bedrooms'],cpl:['Standard LTC policy'],notes:'Rating conflict - worth second visit',details:'<p class="sec-label">From Website</p><p><strong>City of Toronto operated</strong> - One of 10 City-run LTC homes with direct municipal oversight and accountability.</p><p><strong>187 beds</strong> in a neighbourhood setting in East York, near Danforth and Dawes.</p><p><strong>Programs:</strong> Individualized care plans, recreation programs, music and art therapy, outdoor courtyard access.</p><p><strong>Special Features:</strong> Strong infection control protocols, resident council, family council for advocacy.</p><p><strong>Admission:</strong> Via Ontario Health atHome (310-2222). City homes follow provincial funding rates.</p>'},
+  {id:'c4',n:'Chester Village',loc:'3555 Danforth Ave, Toronto',ph:'416-466-2173',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=2970',site:'https://www.chestervillage.ca/',cost:'~$2,100-$2,800/mo',tier:1,src:'fr',status:'like',score:4,bstar:null,beds:'203',wl:'1,011 waitlist',wc:'wc-l',tags:['Broadview Foundation','24hr Nursing','East End'],pros:['Family 4/5','Non-profit','Strong programming'],cons:['Very long waitlist: 1,011'],cpl:['Call for couples info'],notes:'Operated by Broadview Foundation',details:'<p class="sec-label">From Website</p><p><strong>Operated by Broadview Foundation</strong> - Non-profit charitable organization focused on senior care since 1966.</p><p><strong>203 beds</strong> in the Danforth/Chester area with easy TTC access (Chester station).</p><p><strong>Programs:</strong> Active recreation program, music therapy, pet visits, gardening, spiritual care, intergenerational programs.</p><p><strong>Memory Care:</strong> Secure unit for residents with dementia. Structured programming and environmental design for safety.</p><p><strong>Community:</strong> Strong family engagement, resident and family councils. Regular newsletters and care conferences.</p>'},
+  {id:'c5',n:'Ina Grafton Gage Home',loc:'40 Bell Estate Rd, Toronto',ph:'416-422-4890',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c609',site:'',cost:'~$2,100-$2,800/mo',tier:1,src:'fr',status:'qx',score:3,bstar:null,beds:'128',wl:'436 waitlist',wc:'wc-m',tags:['128 Beds','Clean'],pros:['Clean, simple','6.4km from home'],cons:['Functional but not standout'],cpl:['Standard LTC'],notes:''},
+  {id:'c6',n:'Rekai Centre - Cherry Place',loc:'Cherry St, Toronto (opens Dec 2027)',ph:'416-603-2300',web:'https://www.rekaicentre.com/cherryplace.html',site:'https://www.rekaicentre.com',cost:'~$2,100-$2,800/mo',tier:1,src:'fr',status:'pend',score:0,bstar:null,beds:'TBD',wl:'Pre-register NOW',wc:'wc-o',tags:['Opens 2027','New Build','Waterfront'],pros:['Brand new design','Trusted Rekai operator','Waterfront location'],cons:['Opens Dec 2027 - 2+ year wait'],cpl:['Ask Bridget about companion rooms'],notes:'Email bridget@rekaicentres.com'},
+  {id:'c7',n:'Belmont House',loc:'55 Belmont St, Toronto',ph:'416-964-9231',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c606',site:'https://www.belmonthouse.com/',cost:'$2,036-$13,431/mo',tier:1,src:'bo',status:'pend',score:0,bstar:4.2,beds:'140',wl:'1,227 waitlist',wc:'wc-l',tags:['Butterfly Model','26-Bed Dementia Unit','99% Satisfaction'],pros:['Brother 4.2★','Butterfly Model care','Roof garden for dementia','99% family satisfaction'],cons:['Longest waitlist: 1,227'],cpl:['Ask about companion rooms'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Butterfly Model of Care</strong> - Internationally recognized dementia care approach focused on emotional well-being and personhood.</p><p><strong>140 beds</strong> including a 26-bed secure dementia neighbourhood. Rooftop therapeutic garden designed for dementia residents.</p><p><strong>99% family satisfaction rate</strong> - One of the highest in Ontario.</p><p><strong>Programs:</strong> Life story work, sensory activities, music and art therapy, pet therapy, spa services.</p><p><strong>Location:</strong> Midtown Toronto near Yonge/Davisville. Beautiful heritage building with modern care.</p><p><strong>Also offers:</strong> Independent living and assisted living in the same campus (Hazelburn House) - easier transitions as needs change.</p>'},
+  {id:'c8',n:'Fudger House',loc:'439 Sherbourne St, Toronto',ph:'416-392-5252',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c548',site:'https://www.toronto.ca/community-people/housing-shelter/long-term-care-homes/long-term-care-home-locations/fudger-house/',cost:'$2,036-$2,909/mo',tier:1,src:'br',status:'pend',score:0,bstar:4.2,beds:'228',wl:'Contact directly',wc:'wc-o',tags:['City of Toronto','Behavioural Support Leader'],pros:['Brother 4.2★','City operated','Leader in dementia behavioural support'],cons:['Not visited','Downtown parking'],cpl:['City couple policy'],notes:''},
+  {id:'c9',n:'Maynard Nursing Home',loc:'Toronto',ph:'',web:'https://schlegelvillages.com',site:'https://schlegelvillages.com',cost:'$2,036-$2,909/mo',tier:1,src:'br',status:'pend',score:0,bstar:4.5,beds:'unknown',wl:'Contact directly',wc:'wc-o',tags:['Schlegel Villages'],pros:['Brother 4.5★','Respected operator'],cons:['Portuguese cultural priority'],cpl:['Standard LTC policy'],notes:''},
+  {id:'c10',n:"St. Clair O'Connor Community",loc:'2701 St. Clair Ave E, Toronto',ph:'416-757-8757',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=2719',site:'',cost:'$2,036-$2,909/mo',tier:1,src:'bo',status:'pend',score:0,bstar:4.0,beds:'25',wl:'209 waitlist',wc:'wc-l',tags:['Eden Model','25 Beds','Animal-Assisted'],pros:['Brother 4.0★','Eden Model - humanizing','Intimate atmosphere'],cons:['Only 25 beds','Couples very unlikely'],cpl:['Very small home'],notes:''},
+  // === EXPLORING - City of Toronto LTC ===
+  {id:'ex1',n:'Castleview Wychwood Towers',loc:'351 Christie St, Toronto',ph:'416-392-5700',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c538',site:'https://www.toronto.ca/community-people/housing-shelter/long-term-care-homes/long-term-care-home-locations/castleview-wychwood-towers/',cost:'$2,036-$2,909/mo',tier:1,src:'ex',status:'pend',score:0,bstar:null,beds:'456',wl:'Contact directly',wc:'wc-o',tags:['City of Toronto','37-Bed Dementia Unit','Largest City LTC'],pros:["City's largest LTC (456 beds)",'37-bed secure dementia unit','Leader in behavioural support'],cons:['Not yet researched by family'],cpl:['Large facility - ask directly'],notes:'To research',details:'<p class="sec-label">From Website</p><p><strong>City of Toronto\'s largest LTC home</strong> - 456 beds with strong municipal oversight and accountability.</p><p><strong>37-bed secure dementia unit</strong> with specialized behavioural support expertise.</p><p><strong>Location:</strong> Christie/Dupont area near Christie Pits Park. Accessible by TTC.</p><p><strong>Programs:</strong> Recreation, music therapy, spiritual care, outdoor gardens.</p><p><strong>Note:</strong> Being a large facility, it may feel more institutional but offers robust programming and resources.</p>'},
+  {id:'ex2',n:'Kensington Gardens',loc:'25 Brunswick Ave, Toronto',ph:'416-963-9640',web:'https://publicreporting.ltchomes.net/en-ca/homeprofile.aspx?Home=c563',site:'https://www.kensingtonhealth.org/long-term-care',cost:'$2,036-$2,909/mo',tier:1,src:'ex',status:'pend',score:0,bstar:null,beds:'350',wl:'Contact directly',wc:'wc-o',tags:['Non-Profit','Secure Dementia Unit','Downtown'],pros:['350-bed non-profit','Secure Special Care Unit','Downtown location'],cons:['Not yet researched'],cpl:['Ask admissions'],notes:'To research',details:'<p class="sec-label">From Website</p><p><strong>Kensington Health</strong> - Non-profit organization serving the downtown Toronto community.</p><p><strong>350 beds</strong> including a Secure Special Care Unit for residents with dementia.</p><p><strong>Location:</strong> Downtown Toronto near Kensington Market. Urban setting with good TTC access.</p><p><strong>Programs:</strong> Recreation, spiritual care, music therapy, outdoor courtyard.</p><p><strong>Note:</strong> Large non-profit LTC in a vibrant downtown neighbourhood. Worth researching further.</p>'},
+  // === TIER 2: PRIVATE RETIREMENT ===
+  {id:'t2a',n:'The Dunfield Retirement',loc:'77 Dunfield Ave, Toronto',ph:'416-481-8524',web:'https://thedunfield.com/',site:'https://thedunfield.com/',cost:'$9,050-$20,800/mo',tier:2,src:'bo',status:'pend',score:0,bstar:4.4,beds:'177 suites',wl:'Direct admission',wc:'wc-s',tags:['Secure Memory Care','Assisted Living','Yonge & Eglinton'],pros:['Brother 4.4★','BEST couples option','Secure Memory Care neighbourhood','Professional nursing staff'],cons:['High cost up to $20,800'],cpl:['2-bed suites available','Cross-unit coordination'],notes:'Strongest couples option in tracker',details:'<p class="sec-label">From Website</p><p><strong>Full Continuum of Care:</strong> Independent Living, Assisted Living, and Secure Memory Care all in one building.</p><p><strong>177 suites</strong> in prime Yonge & Eglinton location. Walk to shops, restaurants, subway.</p><p><strong>Memory Care Neighbourhood:</strong> Secure floor with specialized programming, life enrichment activities, and 24/7 nursing supervision.</p><p><strong>Couples:</strong> Can live together in larger suites even with different care needs. Staff coordinate care across units if needed.</p><p><strong>Amenities:</strong> Multiple dining venues, fitness centre, salon/spa, garden terraces, library, theatre.</p><p><strong>Staff:</strong> RNs and RPNs on-site 24/7. Visiting physicians. Partnerships with local hospitals.</p>'},
+  {id:'t2b',n:'Harmony Hills Care Community',loc:"1800 O'Connor Dr, Toronto",ph:'416-285-1411',web:'https://www.siennaliving.ca/long-term-care/ontario/harmony-hills-care-community',site:'https://www.siennaliving.ca',cost:'$2,036-$7,500/mo',tier:2,src:'fr',status:'booked',score:0,bstar:null,beds:'160',wl:'432 waitlist',wc:'wc-m',tags:['Sienna Living','LTC + Retirement'],pros:['Tour booked','Major operator','Both LTC and retirement'],cons:['Not yet visited'],cpl:['Ask at tour'],notes:'Tour April 27 @ 11am'},
+  {id:'t2c',n:'Queens Estate',loc:'GTA',ph:'',web:'',site:'',cost:'$7,000/mo',tier:2,src:'br',status:'pend',score:0,bstar:3.9,beds:'unknown',wl:'Contact directly',wc:'wc-o',tags:['Metta Care','24hr Nursing'],pros:['Brother 3.9★','24hr nursing','Compassionate model'],cons:['Primarily palliative focus'],cpl:['Unknown - contact'],notes:''},
+  // === EXPLORING - Private Memory Care ===
+  {id:'ex3',n:'One Kenton Place',loc:'1 Kenton Dr, North York',ph:'647-932-7913',web:'https://onekentonplace.ca/',site:'https://onekentonplace.ca/',cost:'$7,000-$10,000/mo (est)',tier:2,src:'ex',status:'pend',score:0,bstar:null,beds:'unknown',wl:'Contact directly',wc:'wc-o',tags:['Dementia Care','Pet Therapy','Music Therapy'],pros:['Whole-person dementia approach','Pet & music therapy','Memory games, OT'],cons:['Not yet researched'],cpl:['Ask directly'],notes:'To research'},
+  {id:'ex4',n:'Village of Humber Heights',loc:'2245 Lawrence Ave W, Etobicoke',ph:'416-235-0201',web:'https://schlegelvillages.com/humber-heights-etobicoke',site:'https://schlegelvillages.com/humber-heights-etobicoke',cost:'From $7,400/mo',tier:2,src:'ex',status:'pend',score:0,bstar:null,beds:'unknown',wl:'Contact directly',wc:'wc-o',tags:["Emma's Neighbourhood","Schlegel Villages",'Outdoor Spaces'],pros:["Emma's Neighbourhood memory care",'Spacious outdoor spaces','Schlegel Villages operator'],cons:['Etobicoke - west end'],cpl:['Ask about suites'],notes:'To research'},
+  {id:'ex5',n:'Alexis Lodge',loc:'707 Ellesmere Rd, Scarborough',ph:'416-752-1923',web:'https://www.alexislodge.com/',site:'https://www.alexislodge.com/',cost:'Contact for rates',tier:2,src:'ex',status:'pend',score:0,bstar:null,beds:'30',wl:'Contact directly',wc:'wc-o',tags:['30-Bed Dementia Home','25+ Years','Respite Available'],pros:['Specialized dementia care since 1999','Non-institutional approach','Day programs & respite available'],cons:['Small - 30 beds only'],cpl:['Small home - ask directly'],notes:'To research'},
+  // === TIER 3: PREMIUM PRIVATE ===
+  {id:'t3a',n:'The Briton House',loc:'720 Mt. Pleasant Rd, Toronto',ph:'416-487-3392',web:'https://www.britonhouse.com/',site:'https://www.britonhouse.com/',cost:'$7,545-$9,145/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.8,beds:'N/A',wl:'Direct admission',wc:'wc-s',tags:['Family-Owned Since 1976','Memory Care Program','Safe Environment'],pros:['Brother TOP rated 4.8★','Family-owned 48+ years','Assisted Living Memory Care','Structured safe environment'],cons:['Memory care from $7,995+'],cpl:['Same building - shared meals'],notes:'Ask about South Asian programming',details:'<p class="sec-label">From Website</p><p><strong>Family-owned since 1976</strong> - Nearly 50 years of continuous operation by the same family. Exceptional stability and care philosophy.</p><p><strong>Memory Care Program:</strong> Structured daily routines, cognitive stimulation, reminiscence therapy, and safe wandering paths.</p><p><strong>All-Inclusive:</strong> Rates include accommodation, 3 meals + snacks, housekeeping, laundry, activities, and personal care assistance.</p><p><strong>Location:</strong> Quiet residential area on Mount Pleasant Road. Gardens and outdoor spaces. Near Sunnybrook Hospital.</p><p><strong>Couples:</strong> Both can live in the building even with different care needs. Shared meals and activities together.</p><p><strong>Cultural Programming:</strong> Ask about availability of South Asian dietary options and cultural activities.</p>'},
+  {id:'t3b',n:'Hazelton Place',loc:'111 Avenue Rd, Toronto',ph:'416-928-0111',web:'https://verveseniorliving.com/hazelton-place/',site:'https://verveseniorliving.com/hazelton-place/',cost:'$7,490-$15,000/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.5,beds:'unknown',wl:'Direct admission',wc:'wc-s',tags:['Verve Senior Living','Yorkville','Assisted Living Floor'],pros:['Brother 4.5★','Premium Yorkville location','Self-contained assisted living floor'],cons:['Very high cost','Limited availability'],cpl:['Ask about companion suites'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Operated by Verve Senior Living</strong> - One of Canada\'s largest senior living operators with 25+ communities.</p><p><strong>Premium Yorkville Location:</strong> Steps from galleries, boutiques, restaurants. Urban lifestyle for active seniors.</p><p><strong>Care Levels:</strong> Independent Living with option to add services. Dedicated Assisted Living floor with 24/7 care staff.</p><p><strong>Amenities:</strong> Fine dining, bistro, fitness centre, spa, rooftop terrace, library, art studio, concierge services.</p><p><strong>Healthcare:</strong> Registered staff on-site. Partnerships with nearby hospitals including Sunnybrook and Mount Sinai.</p><p><strong>Suites:</strong> Studio to 2-bedroom options. Some couples suites available - inquire about availability.</p>'},
+  {id:'t3c',n:'Baycrest Terraces',loc:'55 Ameer Ave, Toronto',ph:'416-785-2379',web:'https://www.baycrestterraces.com/',site:'https://www.baycrestterraces.com/',cost:'$18,000-$19,500/mo',tier:3,src:'br',status:'pend',score:0,bstar:4.1,beds:'182 suites',wl:'Contact directly',wc:'wc-m',tags:['Baycrest Research-Backed','Memory Care','Jewish/Kosher'],pros:['Brother 4.1★','182 suites - IL, AL, Memory Care','World-class neuroscience research'],cons:['HIGHEST cost: $18-19.5K','Kosher/Jewish focus'],cpl:['Multiple care levels on campus'],notes:'Email BaycrestTerraces@Baycrest.org',details:'<p class="sec-label">From Website</p><p><strong>Part of Baycrest</strong> - World-renowned academic health sciences centre specializing in aging and brain health.</p><p><strong>182 suites</strong> offering Independent Living, Assisted Living, and Memory Care on the same campus.</p><p><strong>Research-Backed Care:</strong> Programs developed by Baycrest\'s Rotman Research Institute. Access to clinical trials and latest dementia interventions.</p><p><strong>Memory Care:</strong> "Baycrest at Home" philosophy - familiar, home-like environment with specialized dementia programming.</p><p><strong>Jewish Heritage:</strong> Kosher dining, Jewish cultural programming, Shabbat observance. Open to all faiths but Jewish cultural focus.</p><p><strong>Healthcare:</strong> On-campus access to Baycrest Hospital, geriatric specialists, and allied health professionals.</p>'},
+  {id:'t3d',n:'Sagecare',loc:'147 Elder St, Toronto',ph:'',web:'https://www.sagecare.ca',site:'https://www.sagecare.ca',cost:'$12,750-$16,000/mo',tier:3,src:'br',status:'pend',score:0,bstar:3.8,beds:'small',wl:'Contact directly',wc:'wc-o',tags:['Dementia-Only','1:4 Staff Ratio','Locked Pricing'],pros:['Dementia-only environment','1:4 staff ratio','No price escalation'],cons:['Brother lowest 3.8★','Small group home'],cpl:['Individual placement only'],notes:''},
+];
+
+let userFacs = JSON.parse(localStorage.getItem('ecn_facs')||'[]');
+let costUpdates = JSON.parse(localStorage.getItem('ecn_costs')||'{}');
+let userNotes = JSON.parse(localStorage.getItem('ecn_notes')||'{}');
+let currentFilter = 'all';
+let starVal = 0;
+let evalEntries = [];
+let editingFacId = null;
+let editingCostId = null;
+const WTS = {dementia:5,couples:4,cost:4,cultural:3,location:3,atmosphere:5};
+const CRIT = [{id:'dementia',l:'Dementia Care'},{id:'couples',l:'Couples'},{id:'cost',l:'Cost/Value'},{id:'cultural',l:'Cultural Fit'},{id:'location',l:'Location'},{id:'atmosphere',l:'Atmosphere'}];
+
+function allFacs(){
+  const facUpdates = JSON.parse(localStorage.getItem('ecn_fac_updates')||'{}');
+  const updatedFacs = FACS.map(f => {
+    if(facUpdates[f.id]){
+      return {...f, status: facUpdates[f.id].status || f.status, score: facUpdates[f.id].score || f.score};
+    }
+    return f;
+  });
+  return [...updatedFacs, ...userFacs];
+}
+
+function filterSrc(src){
+  currentFilter = src;
+  document.querySelectorAll('.source-filters .sbadge').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderFacs();
+  renderTracker();
+}
+
+function renderFacs(){
+  const out = document.getElementById('fac-out');
+  const sort = document.getElementById('fac-sort').value;
+  const filter = document.getElementById('fac-filter').value;
+  const search = (document.getElementById('fac-search').value||'').toLowerCase();
+  let facs = allFacs().filter(f=>{
+    if(search && !f.n.toLowerCase().includes(search) && !f.loc.toLowerCase().includes(search)) return false;
+    if(currentFilter!=='all' && f.src!==currentFilter) return false;
+    if(filter==='couples' && (!f.cpl || f.cpl.length===0)) return false;
+    if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
+    if(filter==='shortlist' && (f.score||0)<4 && (!f.bstar||f.bstar<4)) return false;
+    return true;
+  });
+  if(sort==='rating') facs.sort((a,b)=>(Math.max(b.score||0,b.bstar||0))-(Math.max(a.score||0,a.bstar||0)));
+  else if(sort==='cost-low') facs.sort((a,b)=>parseCost(a.cost)-parseCost(b.cost));
+  else if(sort==='cost-high') facs.sort((a,b)=>parseCost(b.cost)-parseCost(a.cost));
+  else facs.sort((a,b)=>a.tier-b.tier);
+
+  let h = '';
+  const tiers = sort==='tier' ? [1,2,3] : [0];
+  tiers.forEach(tier=>{
+    const tierFacs = tier===0 ? facs : facs.filter(f=>f.tier===tier);
+    if(tierFacs.length===0) return;
+    if(tier>0){
+      const titles = {1:'Tier 1 — Public / Not-for-Profit LTC',2:'Tier 2 — Private Retirement',3:'Tier 3 — Premium Private'};
+      const costs = {1:'~$2,100-$2,900/mo',2:'~$4,500-$10,000/mo',3:'$7,500-$20,000+/mo'};
+      h += `<div class="tier-hdr"><span class="t-title">${titles[tier]}</span><span class="t-cost">${costs[tier]}</span></div>`;
+    }
+    h += '<div class="fgrid">';
+    tierFacs.forEach(f=>{ h += renderFacCard(f); });
+    h += '</div>';
+  });
+  out.innerHTML = h || '<p style="color:var(--muted);">No facilities match filters.</p>';
+  updateProgress();
+}
+
+function renderFacCard(f){
+  const tc = f.tier===1?'t1':f.tier===2?'t2':'t3';
+  const srcTag = {fr:'<span class="stag fr">Friend</span>',br:'<span class="stag br">Brother</span>',bo:'<span class="stag bo">Both</span>',me:'<span class="stag me">Mine</span>',ex:'<span class="stag ex">Exploring</span>'}[f.src]||'';
+  const bs = f.bstar ? `<span class="spill">${f.bstar}★</span>` : '';
+  const fs = f.score>0 ? `<span class="spill">${f.score}/5</span>` : '';
+  const costData = costUpdates[f.id];
+  const costDisplay = costData ? costData.cost : f.cost;
+  const costBadge = costData ? '<span class="cpill conf">✓</span>' : '<span class="cpill est">Est.</span>';
+  const ph = f.ph ? `<a href="tel:${f.ph.replace(/[^0-9]/g,'')}" class="call-btn">📞 Call</a>` : '';
+  const mapLink = f.loc ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(f.loc)}" target="_blank" class="map-btn">📍 Map</a>` : '';
+  const siteLink = f.site ? `<a href="${f.site}" target="_blank">Website ↗</a>` : '';
+  const reportLink = f.web ? `<a href="${f.web}" target="_blank">Inspection Report ↗</a>` : '';
+
+  // Family feedback from notes
+  const feedback = userNotes[f.id] || f.notes || '';
+  const feedbackSection = `<details class="fac-section feedback">
+    <summary>📝 Family Feedback & Notes</summary>
+    <div class="sec-body">
+      ${feedback ? `<p>${feedback}</p>` : '<p style="color:var(--muted);font-style:italic;">No notes yet. Add notes from the Tracker tab.</p>'}
+      <button class="btn btn-s" style="margin-top:6px;font-size:.75rem;" onclick="openNotesModal('${f.id}')">Edit Notes</button>
+    </div>
+  </details>`;
+
+  // Facility details from website research
+  const details = f.details || '';
+  const detailsSection = details ? `<details class="fac-section details">
+    <summary>🏠 Facility Details (from website)</summary>
+    <div class="sec-body">${details}</div>
+  </details>` : '';
+
+  return `<div class="fcard ${tc}">
+    <div class="ftop">
+      <div><div class="fname">${f.n} ${srcTag}</div><div class="fmeta">${f.loc} ${ph} ${mapLink} ${siteLink} ${reportLink}</div></div>
+      <div class="fpills">${costBadge}<span class="cpill">${costDisplay}</span>${bs}${fs}</div>
+    </div>
+    <div class="tags">${(f.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <div class="fbody">
+      <div><div class="fbt pros">✓ Strengths</div><ul class="dots">${(f.pros||[]).map(p=>`<li>${p}</li>`).join('')}</ul></div>
+      <div><div class="fbt cons">⚠ Concerns</div><ul class="dots">${(f.cons||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
+      <div><div class="fbt cpl">♥ Couples</div><ul class="dots">${(f.cpl||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
+      <div><div class="fbt wl">⏱ Waitlist</div><span class="wchip ${f.wc}">${f.wl}</span></div>
+    </div>
+    ${detailsSection}
+    ${feedbackSection}
+  </div>`;
+}
+
+function parseCost(c){ const m=(c||'').match(/\$?([\d,]+)/); return m?parseInt(m[1].replace(/,/g,'')):99999; }
+
+function renderTracker(){
+  const tb = document.getElementById('tr-body');
+  const sort = document.getElementById('tr-sort').value;
+  const filter = document.getElementById('tr-filter').value;
+  const search = (document.getElementById('tr-search').value||'').toLowerCase();
+  let facs = allFacs().filter(f=>{
+    if(search && !f.n.toLowerCase().includes(search) && !(f.loc||'').toLowerCase().includes(search)) return false;
+    if(currentFilter!=='all' && f.src!==currentFilter) return false;
+    if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
+    if(filter==='pending' && f.status!=='pend' && f.status!=='booked') return false;
+    if(filter==='shortlist' && (f.score||0)<4 && (!f.bstar||f.bstar<4)) return false;
+    return true;
+  });
+  if(sort==='score') facs.sort((a,b)=>(Math.max(b.score||0,b.bstar||0))-(Math.max(a.score||0,a.bstar||0)));
+  else if(sort==='status') facs.sort((a,b)=>({star:1,like:2,booked:3,qx:4,pend:5,no:6}[a.status]||5)-({star:1,like:2,booked:3,qx:4,pend:5,no:6}[b.status]||5));
+  else facs.sort((a,b)=>a.n.localeCompare(b.n));
+
+  const stMap = {star:'sp-star',like:'sp-like',qx:'sp-qx',no:'sp-no',pend:'sp-pend',booked:'sp-booked'};
+  const stLbl = {star:'★ Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
+  const srcLbl = {fr:'Friend',br:'Brother',bo:'Both',me:'Mine',ex:'Exploring'};
+
+  tb.innerHTML = facs.map(f=>{
+    const sc = Math.max(f.score||0, f.bstar||0);
+    const scCls = sc>=5?'s5':sc>=4?'s4':sc>=3?'s3':sc>=2?'s2':sc>=1?'s1':'s0';
+    const costData = costUpdates[f.id];
+    const costDisplay = costData ? `${costData.cost} ✓` : f.cost;
+    const noteData = userNotes[f.id] || f.notes || '';
+    const notePreview = noteData.length>25 ? noteData.substring(0,25)+'...' : (noteData||'+ Add');
+    return `<tr>
+      <td><strong>${f.n}</strong></td>
+      <td><span class="stag ${f.src}">${srcLbl[f.src]||''}</span></td>
+      <td><span class="sp ${stMap[f.status]||'sp-pend'}">${stLbl[f.status]||'Pending'}</span></td>
+      <td><span class="sdot ${scCls}">${sc||'-'}</span></td>
+      <td style="cursor:pointer;text-decoration:underline dotted;" onclick="openCostModal('${f.id}')">${costDisplay}</td>
+      <td style="font-size:.78rem;">${f.wl||'-'}</td>
+      <td><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openNotesModal('${f.id}')">${notePreview}</button></td>
+      <td>${f._u?`<button class="btn btn-d" onclick="removeFac('${f.id}')">✕</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  popEvalSel();
+  updateProgress();
+}
+
+function setStar(n){ starVal=n; document.getElementById('af-score').value=n; document.querySelectorAll('#af-stars span').forEach((s,i)=>s.classList.toggle('lit',i<n)); }
+
+function addFac(){
+  const name = document.getElementById('af-name').value.trim();
+  if(!name){alert('Enter a name.');return;}
+  const f = {id:'u_'+Date.now(),_u:true,n:name,tier:+document.getElementById('af-tier').value,loc:document.getElementById('af-loc').value,ph:document.getElementById('af-phone').value,web:'',site:document.getElementById('af-web').value,cost:document.getElementById('af-cost').value||'TBD',src:document.getElementById('af-src').value,status:document.getElementById('af-status').value,score:+document.getElementById('af-score').value,bstar:null,wl:document.getElementById('af-wait').value||'Unknown',wc:'wc-o',notes:document.getElementById('af-notes').value,tags:[],pros:[],cons:[],cpl:[]};
+  userFacs.push(f);
+  localStorage.setItem('ecn_facs',JSON.stringify(userFacs));
+  ['af-name','af-loc','af-phone','af-web','af-cost','af-wait','af-notes'].forEach(id=>document.getElementById(id).value='');
+  starVal=0; document.querySelectorAll('#af-stars span').forEach(s=>s.classList.remove('lit'));
+  document.getElementById('af-score').value='0';
+  document.getElementById('add-panel').removeAttribute('open');
+  renderFacs(); renderTracker();
+}
+
+function removeFac(id){ userFacs=userFacs.filter(f=>f.id!==id); localStorage.setItem('ecn_facs',JSON.stringify(userFacs)); renderFacs(); renderTracker(); }
+
+function openNotesModal(id){
+  editingFacId = id;
+  const f = allFacs().find(x=>x.id===id);
+  document.getElementById('modal-title').textContent = 'Notes: ' + f.n;
+  document.getElementById('modal-notes').value = userNotes[id] || f.notes || '';
+  document.getElementById('notes-modal').classList.add('show');
+}
+function closeModal(){ document.getElementById('notes-modal').classList.remove('show'); editingFacId=null; }
+function saveModalNotes(){
+  if(!editingFacId) return;
+  userNotes[editingFacId] = document.getElementById('modal-notes').value;
+  localStorage.setItem('ecn_notes',JSON.stringify(userNotes));
+  closeModal(); renderTracker();
+}
+
+function openCostModal(id){
+  editingCostId = id;
+  const f = allFacs().find(x=>x.id===id);
+  document.getElementById('cost-input').value = costUpdates[id] ? costUpdates[id].cost : f.cost;
+  document.getElementById('cost-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('cost-modal').classList.add('show');
+}
+function closeCostModal(){ document.getElementById('cost-modal').classList.remove('show'); editingCostId=null; }
+function saveCost(){
+  if(!editingCostId) return;
+  costUpdates[editingCostId] = {cost:document.getElementById('cost-input').value, date:document.getElementById('cost-date').value};
+  localStorage.setItem('ecn_costs',JSON.stringify(costUpdates));
+  closeCostModal(); renderFacs(); renderTracker();
+}
+
+function popEvalSel(){
+  const s = document.getElementById('eval-sel'); s.innerHTML = '<option value="">— choose —</option>';
+  const sorted = allFacs().slice().sort((a,b) => a.n.localeCompare(b.n));
+  sorted.forEach(f=>s.innerHTML+=`<option value="${f.id}">${f.n}</option>`);
+}
+function buildEvalSliders(){
+  document.getElementById('eval-sliders').innerHTML = CRIT.map(c=>`<div class="sl-row"><label>${c.l}</label><input type="range" min="1" max="10" value="5" id="es-${c.id}" oninput="document.getElementById('esv-${c.id}').textContent=this.value"><span class="sl-val" id="esv-${c.id}">5</span></div>`).join('');
+}
+function buildWtSliders(){
+  document.getElementById('wt-sliders').innerHTML = CRIT.map(c=>`<div class="sl-row"><label>${c.l}</label><input type="range" min="1" max="10" value="${WTS[c.id]}" id="ws-${c.id}" oninput="WTS['${c.id}']=+this.value;document.getElementById('wsv-${c.id}').textContent=this.value;rerank();"><span class="sl-val" id="wsv-${c.id}">${WTS[c.id]}</span></div>`).join('');
+}
+function addEval(){
+  const fid = document.getElementById('eval-sel').value;
+  if(!fid){alert('Select a facility.');return;}
+  if(evalEntries.find(e=>e.fid===fid)){alert('Already ranked.');return;}
+  const f = allFacs().find(x=>x.id===fid);
+  const scores = {}; CRIT.forEach(c=>{scores[c.id]=+document.getElementById('es-'+c.id).value;});
+  evalEntries.push({fid, name:f.n, scores}); rerank();
+}
+function rerank(){
+  if(!evalEntries.length) return;
+  const tw = Object.values(WTS).reduce((a,b)=>a+b,0);
+  const ranked = evalEntries.map(e=>{let ws=0; CRIT.forEach(c=>{ws+=e.scores[c.id]*WTS[c.id];}); return {...e, ws:+(ws/tw).toFixed(1)};}).sort((a,b)=>b.ws-a.ws);
+  document.getElementById('rank-body').innerHTML = ranked.map((e,i)=>`<tr><td><span class="sdot" style="background:${i===0?'var(--gold)':i===1?'var(--slate)':'var(--teal)'}">${i+1}</span></td><td><strong>${e.name}</strong></td><td><strong style="color:var(--teal)">${e.ws}</strong>/10</td>${CRIT.map(c=>`<td>${e.scores[c.id]}</td>`).join('')}<td><button class="btn btn-d" onclick="removeEval('${e.fid}')">✕</button></td></tr>`).join('');
+  document.getElementById('eval-out').style.display = 'block';
+}
+function removeEval(fid){ evalEntries=evalEntries.filter(e=>e.fid!==fid); if(!evalEntries.length) document.getElementById('eval-out').style.display='none'; else rerank(); }
+
+function updateProgress(){
+  const facs = allFacs();
+  document.getElementById('prog-visited').textContent = facs.filter(f=>['star','like','qx'].includes(f.status)).length;
+  document.getElementById('prog-booked').textContent = facs.filter(f=>f.status==='booked').length;
+  document.getElementById('prog-ruled').textContent = facs.filter(f=>f.status==='no').length;
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===================== HOME CARE BUILDERS =====================
+function buildHomeCare(){
+  const retros = [
+    {r:'Bathroom',c:'$800-$4,500',i:['Grab bars: toilet + shower ($80-$300)','Walk-in shower ($2,000-$4,000)','Raised toilet seat ($60-$200)','Non-slip flooring ($50-$400)']},
+    {r:'Kitchen',c:'$300-$1,500',i:['iGuardStove auto shut-off ($200-$400) CRITICAL','Cabinet locks ($20-$80)','Medication dispenser ($80-$300)']},
+    {r:'Bedroom',c:'$200-$2,000',i:['Bed rails ($80-$300)','Motion-sensor night light ($30-$100)','Door alarm - wandering ($40-$150)']},
+    {r:'Entryways',c:'$500-$8,000',i:['Grab bars at entry ($100-$300)','Threshold ramps ($80-$400)','Stair lift if needed ($3,000-$8,000)']},
+    {r:'General',c:'$200-$1,000',i:['Remove trip hazards','Emergency call system ($35-$70/mo)','GPS tracker ($40 + $20/mo)']},
+    {r:'Total Budget',c:'$2,000-$8,000',i:['Most families: $3,000-$5,000','Check Red Cross Equipment Loan (free)','ADP covers 75% of some items']},
+  ];
+  document.getElementById('retro-grid').innerHTML = retros.map(r=>
+    `<div class="card"><h4>${r.r}</h4><div class="meta" style="color:var(--teal);font-weight:700;">${r.c}</div><ul class="dots">${r.i.map(i=>`<li>${i}</li>`).join('')}</ul></div>`
+  ).join('');
+
+  const safety = [
+    {n:'Door Alarms',m:'Wandering prevention',d:'Magnetic contact alarms. $15-$50/door. Install on ALL exterior doors at Stage 5.'},
+    {n:'GPS Tracker',m:'AngelSense or AirTag',d:'Real-time location. ~$100 device + $40/mo. Essential for wandering risk.'},
+    {n:'iGuardStove',m:'Auto stove shut-off',d:'Canadian company. Prevents kitchen fires. $200-$400. High-impact intervention.'},
+    {n:'MedAlert',m:'Emergency response',d:'Wearable button, 24/7 monitoring. $35-$75/mo. Non-negotiable at Stage 5+.'},
+  ];
+  document.getElementById('safety-eq').innerHTML = safety.map(s=>
+    `<div class="card"><h4>${s.n}</h4><div class="meta">${s.m}</div><p>${s.d}</p></div>`
+  ).join('');
+
+  document.getElementById('govt-tbl').innerHTML = `
+    <tr><th>Service</th><th>What You Get</th><th>Reality</th></tr>
+    <tr><td><strong>PSW Care</strong></td><td>Bathing, dressing, meals</td><td>Most get 3-5 hrs/week. Not enough for Stage 5-6.</td></tr>
+    <tr><td><strong>Nursing</strong></td><td>Wound care, meds</td><td>1-3 visits/week. Medical needs only.</td></tr>
+    <tr><td><strong>Respite</strong></td><td>Caregiver break</td><td>Up to 90 days/year. Apply early.</td></tr>`;
+
+  document.getElementById('priv-tbl').innerHTML = `
+    <tr><th>Service</th><th>Rate</th><th>Monthly</th></tr>
+    <tr><td><strong>PSW</strong></td><td>$25-$35/hr</td><td>$3,000-$6,000</td></tr>
+    <tr><td><strong>Live-In</strong></td><td>$200-$350/day</td><td>$6,000-$10,500</td></tr>
+    <tr><td><strong>Overnight</strong></td><td>$160-$240/night</td><td>$2,000-$4,500 (3x/wk)</td></tr>
+    <tr><td colspan="3"><strong>Typical Stage 5-6: $3,500-$8,000/mo private</strong></td></tr>`;
+
+  const agencies = [
+    {n:'Ontario Health atHome',ph:'310-2222',url:'https://ontariohealthathome.ca',d:'START HERE. Free assessment unlocks PSW, nursing, respite, day programs, and LTC application.'},
+    {n:'Alzheimer Society Toronto',ph:'416-322-6560',url:'https://alzheimertoronto.org',d:'Free counselling, education, support groups, and First Link navigation for newly diagnosed families.'},
+    {n:'Home Instead Senior Care',ph:'416-697-9882',url:'https://www.homeinstead.ca/location/toronto/',d:'Dementia-trained CAREGivers. Companionship through complex care. 24/7 available. Cultural matching.'},
+    {n:'Bayshore Home Health',ph:'1-877-289-3997',url:'https://www.bayshore.ca',d:'National provider. Complex medical, dementia support, palliative care. Day and overnight coverage.'},
+    {n:'CarePartners',ph:'1-888-470-2273',url:'https://www.carepartners.ca',d:'Ontario provider. Publicly funded and private options. Integrated with Ontario Health atHome referrals.'},
+    {n:'Nurse Next Door',ph:'416-792-2244',url:'https://www.nursenextdoor.com/toronto/',d:'24/7 home care. Dementia and Alzheimer care specialists. Hourly or live-in options.'},
+    {n:'Comfort Keepers Toronto',ph:'416-663-2930',url:'https://www.comfortkeepers.ca/toronto/',d:'Interactive caregiving approach. Dementia care, respite, 24-hour care. Free in-home assessment.'},
+    {n:'VHA Home HealthCare',ph:'416-489-2500',url:'https://www.vha.ca',d:'Not-for-profit. PSW, nursing, therapy. Accepts Ontario Health atHome referrals. 100+ years in Toronto.'},
+  ];
+  document.getElementById('agencies').innerHTML = agencies.map(a=>
+    `<div class="card"><h4>${a.n}</h4><div class="meta"><a href="tel:${a.ph.replace(/[^0-9]/g,'')}">${a.ph}</a> · <a href="${a.url}" target="_blank">Website ↗</a></div><p>${a.d}</p></div>`
+  ).join('');
+
+  const dayProgs = [
+    {n:'Baycrest Adult Day Program',ph:'416-785-2500',url:'https://www.baycrest.org/Baycrest/Programs-Services/Programs/Day-Programs',loc:'3560 Bathurst St',d:"Canada's top dementia day program. Therapeutic activities, meals, nursing supervision. Physician referral required."},
+    {n:'WoodGreen Adult Day Programs',ph:'416-645-6000',url:'https://www.woodgreen.org/services/seniors',loc:'East Toronto (multiple)',d:'Dementia-specific programming. Subsidized and private-pay spots. Strong community connection.'},
+    {n:'Circle of Care',ph:'416-635-2860',url:'https://www.circleofcare.com/services/adult-day-programs/',loc:'Multiple GTA locations',d:'Adult day programs with dementia support. Transportation available. Kosher and non-kosher options.'},
+    {n:'City of Toronto Day Programs',ph:'416-338-0355',url:'https://www.toronto.ca/community-people/housing-shelter/long-term-care-homes/',loc:'Multiple city locations',d:'City-run, sliding scale fees. Apply through Ontario Health atHome for subsidized spots.'},
+    {n:'Bernard Betel Centre',ph:'416-225-2112',url:'https://www.betelcentre.org',loc:'1003 Steeles Ave W',d:'Adult day program with dementia support. Social activities, meals, respite for caregivers.'},
+  ];
+  document.getElementById('day-progs').innerHTML = dayProgs.map(a=>
+    `<div class="card"><h4>${a.n}</h4><div class="meta"><a href="tel:${a.ph.replace(/[^0-9]/g,'')}">${a.ph}</a> · <a href="${a.url}" target="_blank">Website ↗</a> · <a href="https://www.google.com/maps/search/${encodeURIComponent(a.loc)}" target="_blank">📍 ${a.loc}</a></div><p>${a.d}</p></div>`
+  ).join('');
+
+  buildCK('ck-safe',[
+    {l:'Leaves stove on or causes kitchen hazards',s:'Fire risk - iGuardStove immediately'},
+    {l:'Wanders or tries to leave unsafely',s:'Door alarms and GPS essential'},
+    {l:'Falls or frequent near-misses',s:'OT assessment needed now'},
+    {l:'Cannot be left alone briefly',s:'Continuous supervision needed'},
+  ]);
+  buildCK('ck-cg',[
+    {l:'Primary caregiver exhausted/depressed',s:'Caregiver health is not secondary'},
+    {l:'Caregiver has limiting health condition',s:'Physical care requires capacity'},
+    {l:'Cannot maintain overnight coverage',s:'Often first thing to become unmanageable'},
+    {l:'Frequent family conflict about care',s:'Social worker can help mediate'},
+  ]);
+  buildCK('ck-med',[
+    {l:'Full assistance with bathing/dressing/toileting',s:'Professional care appropriate'},
+    {l:'Frequent infections',s:'Nursing monitoring needed'},
+    {l:'Physician has recommended placement',s:'Act promptly on clinical advice'},
+    {l:'Private care costs approaching LTC costs',s:'LTC may provide better care at lower cost'},
+  ]);
+}
+
+function buildCK(id,items){
+  document.getElementById(id).innerHTML = items.map((item,i)=>
+    `<div class="ck-item" onclick="toggleCK('${id}-${i}')">
+      <input type="checkbox" id="${id}-${i}">
+      <div><div class="ck-lbl" id="lbl-${id}-${i}">${item.l}</div><span class="ck-sub">${item.s}</span></div>
+    </div>`
+  ).join('');
+}
+function toggleCK(id){
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  document.getElementById('lbl-'+id).classList.toggle('done',cb.checked);
+}
+
+// ===================== STAGES =====================
+function buildStages(){
+  const stages = [
+    {n:1,c:'#6bbf94',t:'Stage 1-2: No/Mild Impairment',s:'Years before diagnosis',sym:['Normal function','Occasional forgetfulness'],care:['Monitoring only'],set:['Independent'],cls:''},
+    {n:3,c:'#3aa6a6',t:'Stage 3: Mild Decline',s:'2-7 years',sym:['Memory issues noticed','Difficulty with complex tasks'],care:['Memory aids','Legal/financial planning NOW'],set:['Home with support'],cls:''},
+    {n:4,c:'#c4973a',t:'Stage 4: Moderate',s:'2-4 years',sym:['Clear memory deficits','Difficulty with finances'],care:['PSW support begins','Adult day program'],set:['Home + day program'],cls:'ws'},
+    {n:5,c:'#e07a20',t:'Stage 5: Moderately Severe',s:'1.5-2 years',sym:['Forgets personal details','Confused about time/place'],care:['Daily PSW help','APPLY FOR LTC NOW'],set:['Home + intensive support'],cls:'ws'},
+    {n:6,c:'#b03232',t:'Stage 6: Severe ← Current Stage',s:'~2.5 years',sym:['Confuses where he lives','May not recognize spouse','Full ADL assistance'],care:['24-hour supervision','LTC application ACTIVE'],set:['Memory care or LTC'],cls:'us'},
+    {n:7,c:'#5a3d8a',t:'Stage 7: Very Severe',s:'1-2.5 years',sym:['Minimal communication','Full dependency'],care:['Full-time LTC','Comfort focused'],set:['LTC with palliative'],cls:''},
+  ];
+  
+  document.getElementById('stage-tl').innerHTML = stages.map((s,i)=>
+    `<div class="stage-item">
+      <div class="stage-conn"><div class="stage-dot" style="background:${s.c};">${s.n}</div>${i<stages.length-1?'<div class="stage-line"></div>':''}</div>
+      <div class="stage-body ${s.cls}">
+        <div class="stage-title" style="color:${s.c};">${s.t}</div>
+        <div class="stage-sub">${s.s}</div>
+        <div class="stage-cols">
+          <div><div class="mini-t">Symptoms</div><ul class="dots">${s.sym.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div><div class="mini-t">Care Actions</div><ul class="dots">${s.care.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div><div class="mini-t">Setting</div><ul class="dots">${s.set.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+    </div>`
+  ).join('');
+  
+  document.getElementById('stage-tbl').innerHTML = `
+    <thead><tr><th>Stage</th><th>Setting</th><th>Key Action</th></tr></thead>
+    <tbody>
+    <tr><td>Early (1-3)</td><td>Home</td><td>Legal/financial planning</td></tr>
+    <tr><td>Mild (4)</td><td>Home + Day Program</td><td>Begin LTC research</td></tr>
+    <tr><td>Moderate (5)</td><td>Home + PSW</td><td><strong>Apply for LTC now</strong></td></tr>
+    <tr style="background:#fff5f5;"><td><strong>Severe (6)</strong></td><td>Memory Care/LTC</td><td>Transition to facility</td></tr>
+    <tr><td>Very Severe (7)</td><td>LTC + Palliative</td><td>Comfort and dignity</td></tr>
+    </tbody>`;
+}
+
+// ===================== ENTITLEMENTS =====================
+function buildEntitlements(){
+  const prov = [
+    {n:'Ontario Health atHome',e:'65+ or assessed need at any age',ph:'310-2222',url:'https://ontariohealthathome.ca',d:'Free assessment unlocks: PSW care (bathing, dressing), nursing visits, OT assessment, up to 90 days/year respite, adult day program referrals, and LTC application. This is your gateway to everything else.'},
+    {n:'Long-Term Care Rate Reduction',e:'LTC residents with income under threshold',ph:'Contact LTC social worker',url:'https://www.ontario.ca/page/find-long-term-care-home',d:'Basic accommodation rate reduced based on income. Minimum rate ~$1,400/month. Nobody should be denied placement due to inability to pay. Apply through LTC home social worker.'},
+    {n:'Assistive Devices Program (ADP)',e:'Ontario residents with long-term physical needs',ph:'1-800-268-6021',url:'https://www.ontario.ca/page/assistive-devices-program',d:'Province covers 75% of approved equipment: wheelchairs, walkers, bath aids, hospital beds, communication devices. Application through OT or physician. Average savings: $500-$2,000.'},
+    {n:'Trillium Drug Program',e:'Households with high drug costs relative to income',ph:'1-800-575-5386',url:'https://www.ontario.ca/page/get-help-high-prescription-drug-costs',d:'Caps prescription drug costs above a quarterly deductible based on income. Critical for ongoing dementia medications like donepezil. Can save $1,000+/year.'},
+    {n:'Behaviour Supports Ontario (BSO)',e:'Anyone with responsive dementia behaviours',ph:'Referral via 310-2222',url:'https://www.behaviouralsupports.ca',d:'Specialized mobile team for aggressive, agitated, or distressed behaviours. Works in homes, retirement, and LTC. Can reduce antipsychotic use. Referral through Ontario Health atHome or physician.'},
+    {n:'Ontario Caregiver Organization',e:'Anyone providing unpaid care in Ontario',ph:'1-833-416-2273',url:'https://ontariocaregiver.ca',d:'Free helpline for CAREGIVERS (not patients). Coaching, peer support, emergency respite planning, tax credit guidance. Open 7 days. You need support too.'},
+  ];
+  const fed = [
+    {n:'EI Compassionate Care Benefit',e:'EI-eligible employed caregivers',ph:'1-800-206-7218',url:'https://www.canada.ca/en/services/benefits/ei/caregiving.html',d:'Up to 26 weeks of EI payments (55% of earnings, max ~$650/week) while providing care. Can be shared among eligible family members. Requires physician certificate confirming significant risk of death within 26 weeks.'},
+    {n:'Canada Caregiver Credit (CCC)',e:'Tax filers supporting dependent with impairment',ph:'1-800-959-8281',url:'https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/canada-caregiver-amount.html',d:'Non-refundable tax credit up to ~$7,999 (2024) per eligible dependant. Claim on Schedule 5. Most families never claim this. Can recover $1,000-$2,000 in taxes.'},
+    {n:'Disability Tax Credit (DTC)',e:'Persons with severe and prolonged impairments',ph:'1-800-959-8281',url:'https://www.canada.ca/en/revenue-agency/services/tax/individuals/segments/tax-credits-deductions-persons-disabilities/disability-tax-credit.html',d:'Significant tax reduction for moderate-severe dementia. Physician certifies using Form T2201. Retroactive claims possible for up to 10 years. Unlocks RDSP. Average benefit: $1,500-$2,500/year.'},
+    {n:'Home Accessibility Tax Credit',e:'Seniors 65+ or DTC-eligible',ph:'1-800-959-8281',url:'https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-31285-home-accessibility-expenses.html',d:'15% credit on up to $20,000 of accessibility renovations (grab bars, ramps, walk-in tubs). That is up to $3,000 back. Keep all receipts.'},
+  ];
+  const city = [
+    {n:'Toronto Seniors Helpline',e:'Toronto seniors and families',ph:'416-217-2077',url:'https://www.torontoseniorshelpline.ca',d:'Information, referrals, and supportive counselling. Connects to virtually every city-funded service. Good first call for navigation help. 7 days/week.'},
+    {n:'Toronto Dementia Network',e:'Toronto residents',ph:'',url:'https://www.torontodementianetwork.com',d:'Searchable database of dementia programs, services, and events. Includes culturally specific programs for South Asian families. Search by postal code and language.'},
+    {n:'Wheel-Trans',e:'Toronto residents with disabilities',ph:'416-393-4111',url:'https://www.ttc.ca/wheel-trans',d:'Accessible door-to-door transit for people who cannot use regular TTC. Apply online or by phone. Essential for getting to day programs and medical appointments.'},
+  ];
+
+  const mkEnt = (list,level) => list.map(e=>
+    `<div class="ent-card"><div class="elv ${level}">${level.toUpperCase()}</div><h4>${e.n}</h4><div class="elig">${e.e}</div><div class="meta" style="margin-bottom:6px;">${e.ph?`<a href="tel:${e.ph.replace(/[^0-9]/g,'')}">${e.ph}</a> · `:''}${e.url?`<a href="${e.url}" target="_blank">Website ↗</a>`:''}</div><p>${e.d}</p></div>`
+  ).join('');
+
+  document.getElementById('prov-ent').innerHTML = mkEnt(prov,'prov');
+  document.getElementById('fed-ent').innerHTML = mkEnt(fed,'fed');
+  document.getElementById('city-ent').innerHTML = mkEnt(city,'city');
+}
+
+// ===================== RESOURCES =====================
+function buildResources(){
+  const equip = [
+    {cat:'FREE Equipment Loans',n:'Red Cross Equipment Loan',url:'https://www.redcross.ca/how-we-help/community-health-services-in-canada/health-equipment-loan-program',ph:'416-480-2500',d:'FREE short-term loans: walkers, bath seats, canes, commodes, wheelchairs. Multiple Toronto locations. Check here FIRST before buying anything.'},
+    {cat:'75% Covered by Province',n:'Assistive Devices Program',url:'https://www.ontario.ca/page/assistive-devices-program',ph:'1-800-268-6021',d:'Ontario covers 75% of approved equipment costs. Wheelchairs, hospital beds, bath lifts, communication devices. Apply through OT or physician.'},
+    {cat:'Stove Safety - CRITICAL',n:'iGuardStove',url:'https://www.iguardstove.com',ph:'1-844-400-7233',d:'Canadian company. Auto stove shut-off prevents kitchen fires. Clinically shown to delay LTC placement. $300-400 installed. One of the highest-impact single interventions.'},
+    {cat:'GPS Tracking',n:'AngelSense',url:'https://www.angelsense.com',ph:'',d:'Real-time GPS with family app, two-way audio, waterproof. Designed for adults with cognitive impairments. ~$100 device + $40/mo. Essential for wandering risk.'},
+    {cat:'Medical Alert',n:'MedAlert Canada',url:'https://www.medalert.ca',ph:'1-800-668-9200',d:'Wearable button, 24/7 monitoring centre, fall detection available. $45-70/month. Non-negotiable at Stage 5+.'},
+    {cat:'Door/Window Alarms',n:'Home Depot / Amazon',url:'https://www.homedepot.ca/search?q=door+alarm',ph:'',d:'Magnetic contact alarms alert when doors open. GE, First Alert brands. $15-50/door. Install on ALL exterior doors. Simple, cheap, essential.'},
+    {cat:'Mobility Equipment',n:'Motion Specialties Toronto',url:'https://www.motionspecialties.com',ph:'416-volume-489-2552',d:"Toronto's largest mobility retailer. Ramps, stair lifts, grab bars, hospital beds. Staff can assess home needs on site."},
+    {cat:'Pharmacy Services',n:'Blister Packs (Any Pharmacy)',url:'',ph:'',d:'Ask your pharmacist (Shoppers, Rexall, independent) for medications in blister packs by day/time. Prevents missed or doubled doses. Usually free or very low cost.'},
+  ];
+  const info = [
+    {cat:'Canada - Gold Standard',n:'Alzheimer Society of Canada',url:'https://alzheimer.ca',ph:'1-800-616-8816',d:'Comprehensive dementia information, caregiving guides, stage explanations, online learning. 24/7 Helpline available.'},
+    {cat:'Toronto - Local Support',n:'Alzheimer Society Toronto',url:'https://www.alzheimertoronto.org',ph:'416-322-6560',d:'Free counselling, education sessions, support groups, First Link navigation. Local programs and events calendar.'},
+    {cat:'Ontario - Care Gateway',n:'Ontario Health atHome',url:'https://ontariohealthathome.ca',ph:'310-2222',d:'Official gateway to all publicly funded home care. Free care coordination. Where every journey starts.'},
+    {cat:'Research - Check Every Facility',n:'LTC Public Reporting',url:'https://publicreporting.ltchomes.net/en-ca/',ph:'',d:'Official inspection reports for every LTC home in Ontario. Check compliance history, complaints, staffing before EVERY facility visit.'},
+    {cat:'Toronto Programs',n:'Toronto Dementia Network',url:'https://www.torontodementianetwork.com',ph:'',d:'Searchable database of Toronto programs by postal code, language, and type. Includes South Asian-specific programs.'},
+    {cat:'Ontario - Behaviours',n:'Behaviour Supports Ontario',url:'https://www.behaviouralsupports.ca',ph:'Via 310-2222',d:'Mobile teams for responsive behaviours (agitation, aggression). Can come to home. Free through Ontario Health atHome referral.'},
+    {cat:'Caregiver Support',n:'Ontario Caregiver Organization',url:'https://ontariocaregiver.ca',ph:'1-833-416-2273',d:'For YOU, the caregiver. Helpline, coaching, peer support, emergency respite planning. Open 7 days.'},
+    {cat:'Retirement Homes',n:'RHRA (Retirement Homes Regulatory Authority)',url:'https://www.rhra.ca',ph:'1-855-275-7472',d:'Check if a retirement home is licensed. View inspection reports. Understand your rights. File complaints if needed.'},
+  ];
+
+  document.getElementById('equip-res').innerHTML = equip.map(r=>
+    `<div class="card"><div class="cat" style="font-size:.68rem;color:var(--muted);text-transform:uppercase;margin-bottom:3px;">${r.cat}</div><h4>${r.n}</h4><div class="meta" style="margin-bottom:4px;">${r.ph?`<a href="tel:${r.ph.replace(/[^0-9]/g,'')}">${r.ph}</a> · `:''}${r.url?`<a href="${r.url}" target="_blank">Website ↗</a>`:''}</div><p>${r.d}</p></div>`
+  ).join('');
+  document.getElementById('info-res').innerHTML = info.map(r=>
+    `<div class="card"><div class="cat" style="font-size:.68rem;color:var(--muted);text-transform:uppercase;margin-bottom:3px;">${r.cat}</div><h4>${r.n}</h4><div class="meta" style="margin-bottom:4px;">${r.ph?`<a href="tel:${r.ph.replace(/[^0-9]/g,'')}">${r.ph}</a> · `:''}${r.url?`<a href="${r.url}" target="_blank">Website ↗</a>`:''}</div><p>${r.d}</p></div>`
+  ).join('');
+
+  document.getElementById('buyers-guide').innerHTML = `
+    <div class="box warn"><strong>Before buying anything:</strong> (1) Check <a href="https://www.redcross.ca/how-we-help/community-health-services-in-canada/health-equipment-loan-program" target="_blank">Red Cross Equipment Loan</a> (free). (2) Get OT recommendation via 310-2222. (3) Verify CSA/UL safety certification. (4) Read <a href="https://www.amazon.ca/s?k=dementia+safety" target="_blank">dementia caregiver reviews on Amazon</a>.</div>
+    <div class="g2">
+      <div class="card"><h4>Questions before buying</h4><ul class="dots">
+        <li>Can this be borrowed free from Red Cross?</li>
+        <li>Is it covered 75% by ADP?</li>
+        <li>Has an OT assessed whether it's needed?</li>
+        <li>Is it CSA or UL safety certified?</li>
+        <li>Will it actually be used, or cause confusion?</li></ul></div>
+      <div class="card"><h4>Often bought but not needed yet</h4><ul class="dots">
+        <li>Expensive hospital beds before mobility is an issue</li>
+        <li>Complex smart home systems nobody maintains</li>
+        <li>Multiple overlapping alarm systems</li>
+        <li>Wheelchairs before needed (may reduce walking)</li>
+        <li>"Dementia-specific" products at 5x standard price</li></ul></div>
+    </div>`;
+}
+
+// ===================== DECISION SUPPORT =====================
+function genPri(){
+  const stage = document.getElementById('dq-stage').value;
+  const oha = document.getElementById('dq-oha').value;
+  const concern = document.getElementById('dq-concern').value;
+  const cpl = document.getElementById('dq-cpl').value;
+  const mobility = document.getElementById('dq-mobility').value;
+  const behaviours = document.getElementById('dq-behaviours').value;
+  const night = document.getElementById('dq-night').value;
+  const budget = document.getElementById('dq-budget').value;
+  const poa = document.getElementById('dq-poa').value;
+  const living = document.getElementById('dq-living').value;
+
+  if(!stage){alert('Select a stage first.');return;}
+
+  // Save selections
+  saveDecisionData();
+
+  const P = [];
+
+  // POA is critical - check first
+  if(poa==='no'||poa==='unsure') P.push({c:'p1',t:'Get Power of Attorney documents done NOW',d:'Without POA, you cannot make medical or financial decisions. See elder law lawyer immediately. Costs ~$500-1000, saves thousands in court costs.'});
+
+  if(oha==='no') P.push({c:'p1',t:'Call Ontario Health atHome TODAY — 310-2222',d:'Free assessment. Unlocks PSW, respite, LTC application. Everything depends on this call.'});
+
+  if(stage==='sev'||stage==='late'){
+    P.push({c:'p1',t:'Begin LTC application immediately',d:'Waitlists are 1-3 years. Apply to 5 facilities now. Being on list ≠ must accept.'});
+    P.push({c:'p2',t:'Book tours: Cardinal Ambrozic & Chester Village',d:'Highest-rated public options. Call this week.'});
+  }
+
+  if(stage==='mod'){
+    P.push({c:'p2',t:'Start LTC waitlist planning',d:'Even if not urgent now, getting on lists early gives more options later.'});
+  }
+
+  // Behavioural support
+  if(behaviours==='wandering'||behaviours==='aggression'||behaviours==='severe'){
+    P.push({c:'p1',t:'Prioritize secure memory care units',d:'Look for: Castleview Wychwood (behavioural leader), Belmont House (Butterfly Model), Cardinal Ambrozic (secure unit).'});
+    if(behaviours==='aggression'||behaviours==='severe'){
+      P.push({c:'p2',t:'Ask about Behavioural Support Ontario',d:'Specialized teams help manage difficult behaviours. Request referral through Ontario Health atHome.'});
+    }
+  }
+
+  // Night care
+  if(night==='wanders'||night==='constant'){
+    P.push({c:'p1',t:'Night-time supervision is critical',d:'Home care rarely covers nights. Consider 24-hr private care ($15-25K/mo) or facility placement with overnight staff.'});
+  }
+
+  // Couples
+  if(cpl==='yes') P.push({c:'p2',t:'Call The Dunfield (416-481-8524)',d:'Best couples option — 2-bed suites, can coordinate care across different needs.'});
+
+  // Safety concerns
+  if(concern==='safety') P.push({c:'p1',t:'Install door alarms + iGuardStove this week',d:'Low-cost, high-impact safety interventions. Alzheimer Society has resources.'});
+  if(concern==='burnout') P.push({c:'p1',t:'Call Ontario Caregiver Org — 1-833-416-2273',d:'Free coaching, peer support, emergency respite planning.'});
+
+  // Budget-based recommendations
+  if(budget==='ltc-only'||budget==='unsure') P.push({c:'p2',t:'Focus on public LTC homes',d:'Provincial rates (~$2,000-2,900/mo) are most affordable. Apply to: Cardinal Ambrozic, Chester Village, True Davidson Acres.'});
+  if(budget==='premium') P.push({c:'p3',t:'Tour Baycrest Terraces and Briton House',d:'Premium options with research-backed care. Worth the cost for families who can afford it.'});
+  if(concern==='cost') P.push({c:'p2',t:'Apply for DTC + Canada Caregiver Credit',d:'Together can return $3,000-$7,000 annually. Also check Trillium Drug Program.'});
+
+  // Hospital situation
+  if(living==='hospital') P.push({c:'p1',t:'Contact hospital social worker immediately',d:'They can expedite LTC placement. Ask about Alternate Level of Care (ALC) designation and crisis placement.'});
+
+  // Always include
+  P.push({c:'p3',t:'Email bridget@rekaicentres.com for Cherry Place 2027',d:'Takes 2 min. New build, trusted operator. Free to pre-register.'});
+  P.push({c:'pn',t:'Check inspection reports before every tour',d:'publicreporting.ltchomes.net — good tour can hide bad record.'});
+
+  document.getElementById('pri-items').innerHTML = P.slice(0,8).map((p,i)=>
+    `<div class="pri-item"><div class="pri-num ${p.c}">${i+1}</div><div class="pri-text"><h4>${p.t}</h4><p>${p.d}</p></div></div>`
+  ).join('');
+
+  document.getElementById('pri-note').textContent = 'Every month you delay LTC application is another month on the waitlist. Apply now — accepting is always your choice.';
+  document.getElementById('pri-out').style.display = 'block';
+  document.getElementById('pri-out').scrollIntoView({behavior:'smooth'});
+}
+
+// ===================== SHARE TAB =====================
+function buildShare(){
+  const tourQs = [
+    'What dementia training have staff completed?',
+    'Staff-to-resident ratio day and night?',
+    'Do you accommodate couples together?',
+    'What if one partner needs more care?',
+    'South Asian dietary options (vegetarian)?',
+    'Staff who speak Hindi/Gujarati/Punjabi?',
+    'How do you manage responsive behaviours?',
+    'What does a typical day look like?',
+    'How are families involved in care?',
+    'Can we speak with a current family?',
+    'What happens when needs escalate?',
+    'Current waitlist and acceptance process?',
+    'Can we see the memory care unit?',
+    'How do you handle end-of-life care?',
+    'What is your complaint process?',
+  ];
+  
+  document.getElementById('tour-ck').innerHTML = tourQs.map((q,i)=>
+    `<div class="ck-item" onclick="toggleCK('tq-${i}')">
+      <input type="checkbox" id="tq-${i}"><div class="ck-lbl" id="lbl-tq-${i}">${q}</div>
+    </div>`
+  ).join('');
+  
+  const nextSteps = [
+    {l:'Call Ontario Health atHome — 310-2222',u:true},
+    {l:'Email bridget@rekaicentres.com (Cherry Place 2027)',u:true},
+    {l:'Book physician appointment for LTC referral',u:true},
+    {l:'Call Cardinal Ambrozic (416-285-3600)',u:false},
+    {l:'Call The Dunfield (416-489-7070)',u:false},
+    {l:'Call The Briton House (416-488-6561)',u:false},
+    {l:'Apply for Disability Tax Credit',u:false},
+  ];
+  
+  document.getElementById('next-steps').innerHTML = nextSteps.map((s,i)=>
+    `<div class="ck-item" onclick="toggleCK('ns-${i}')">
+      <input type="checkbox" id="ns-${i}"><div class="ck-lbl" id="lbl-ns-${i}">${s.l}${s.u?'<span class="uflag">Priority</span>':''}</div>
+    </div>`
+  ).join('');
+}
+
+function saveFamilyData(){
+  const data = {
+    name: document.getElementById('fam-name').value,
+    hc: document.getElementById('fam-hc').value,
+    dob: document.getElementById('fam-dob').value,
+    doc: document.getElementById('fam-doc').value,
+    docph: document.getElementById('fam-docph').value,
+    pharm: document.getElementById('fam-pharm').value,
+    emerg: document.getElementById('fam-emerg').value,
+    meds: document.getElementById('fam-meds').value,
+    allergy: document.getElementById('fam-allergy').value,
+    notes: document.getElementById('family-notes').value
+  };
+  localStorage.setItem('ecn_family',JSON.stringify(data));
+  alert('Family info saved to this browser.');
+}
+
+function loadFamilyData(){
+  const data = JSON.parse(localStorage.getItem('ecn_family')||'{}');
+  if(data.name) document.getElementById('fam-name').value = data.name;
+  if(data.hc) document.getElementById('fam-hc').value = data.hc;
+  if(data.dob) document.getElementById('fam-dob').value = data.dob;
+  if(data.doc) document.getElementById('fam-doc').value = data.doc;
+  if(data.docph) document.getElementById('fam-docph').value = data.docph;
+  if(data.pharm) document.getElementById('fam-pharm').value = data.pharm;
+  if(data.emerg) document.getElementById('fam-emerg').value = data.emerg;
+  if(data.meds) document.getElementById('fam-meds').value = data.meds;
+  if(data.allergy) document.getElementById('fam-allergy').value = data.allergy;
+  if(data.notes) document.getElementById('family-notes').value = data.notes;
+}
+
+// ===================== TOUR MODE =====================
+let tourStarVal = 0;
+
+function populateTourSelect(){
+  const sel = document.getElementById('tour-facility');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— select facility —</option>';
+  const sorted = allFacs().slice().sort((a,b) => a.n.localeCompare(b.n));
+  sorted.forEach(f => {
+    sel.innerHTML += `<option value="${f.id}">${f.n}</option>`;
+  });
+}
+
+function setTourStar(n){
+  tourStarVal = n;
+  document.querySelectorAll('#tour-stars span').forEach((s,i) => s.classList.toggle('lit', i < n));
+}
+
+function loadTourFacility(){
+  const fid = document.getElementById('tour-facility').value;
+  if(!fid) {
+    document.getElementById('tour-notes').value = '';
+    document.getElementById('tour-cost').value = '';
+    setTourStar(0);
+    return;
+  }
+  const f = allFacs().find(x => x.id === fid);
+  if(f){
+    // Load existing notes if any
+    document.getElementById('tour-notes').value = userNotes[fid] || f.notes || '';
+    document.getElementById('tour-cost').value = costUpdates[fid] ? costUpdates[fid].cost : '';
+    setTourStar(f.score || 0);
+    // Set status dropdown
+    const statusSel = document.getElementById('tour-status');
+    if(f.status && statusSel) statusSel.value = f.status;
+  }
+}
+
+function saveTourNotes(){
+  const fid = document.getElementById('tour-facility').value;
+  if(!fid){
+    alert('Please select a facility first.');
+    return;
+  }
+
+  const notes = document.getElementById('tour-notes').value;
+  const status = document.getElementById('tour-status').value;
+  const cost = document.getElementById('tour-cost').value;
+  const score = tourStarVal;
+
+  // Save notes
+  if(notes){
+    userNotes[fid] = notes;
+    localStorage.setItem('ecn_notes', JSON.stringify(userNotes));
+  }
+
+  // Save cost if provided
+  if(cost){
+    costUpdates[fid] = {cost: cost, date: new Date().toISOString().split('T')[0]};
+    localStorage.setItem('ecn_costs', JSON.stringify(costUpdates));
+  }
+
+  // Update facility status and score in userFacs if it's a user-added facility
+  const userFacIdx = userFacs.findIndex(f => f.id === fid);
+  if(userFacIdx >= 0){
+    userFacs[userFacIdx].status = status;
+    userFacs[userFacIdx].score = score;
+    localStorage.setItem('ecn_facs', JSON.stringify(userFacs));
+  } else {
+    // For built-in facilities, store status/score update separately
+    let facUpdates = JSON.parse(localStorage.getItem('ecn_fac_updates')||'{}');
+    facUpdates[fid] = {status: status, score: score};
+    localStorage.setItem('ecn_fac_updates', JSON.stringify(facUpdates));
+  }
+
+  // Clear form
+  document.getElementById('tour-facility').value = '';
+  document.getElementById('tour-notes').value = '';
+  document.getElementById('tour-cost').value = '';
+  setTourStar(0);
+
+  alert('Tour notes saved! Check My Tracker to see updates.');
+  renderFacs();
+  renderTracker();
+}
+
+function copySum(){
+  const top = allFacs().filter(f=>f.score>=4||(f.bstar&&f.bstar>=4)).map(f=>`• ${f.n} | ${f.ph||'see web'}`).join('\n');
+  const txt = `ELDER CARE NAVIGATOR — TORONTO\n\nTOP FACILITIES:\n${top}\n\nURGENT:\n1. Call 310-2222 (Ontario Health atHome)\n2. Email bridget@rekaicentres.com\n3. Apply for Disability Tax Credit\n\nBest couples: The Dunfield 416-489-7070\nHighest rated: The Briton House 416-488-6561`;
+  navigator.clipboard.writeText(txt).then(()=>alert('Summary copied!')).catch(()=>alert('Copy failed.'));
+}
+
+// ===================== DECISION QUESTIONS PERSISTENCE =====================
+const DQ_FIELDS = ['dq-stage','dq-cg','dq-concern','dq-oha','dq-cpl','dq-living','dq-mobility','dq-behaviours','dq-night','dq-budget','dq-culture','dq-poa'];
+let decisionData = JSON.parse(localStorage.getItem('ecn_decision')||'{}');
+
+const STAGE_INFO = {
+  'early': {label:'Stage 3-4: Early/Mild',desc:'Your loved one is mostly independent but may need reminders and light support. Focus on safety planning, legal documents (POA), and learning about future options. LTC waitlist application is optional but smart to start early.',color:'var(--green)'},
+  'mod': {label:'Stage 5: Moderate',desc:'Daily help is needed with activities like bathing, dressing, and meals. Consider increasing home care hours or exploring retirement homes with support services. If not already done, apply to LTC waitlist now.',color:'var(--orange)'},
+  'sev': {label:'Stage 5-6: Moderate-Severe',desc:'Your loved one shows confusion about where they live, may not always recognize family, and needs supervision. LTC application should be active now — waitlists are 1-3 years. Explore private options for faster placement.',color:'var(--red)'},
+  'late': {label:'Stage 6-7: Late/Severe',desc:'Full care is needed for all daily activities. If not already in a facility, urgent placement is likely needed. Contact Ontario Health atHome (310-2222) immediately for crisis placement options.',color:'var(--red)'}
+};
+
+function saveDecisionData(){
+  DQ_FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) decisionData[id] = el.value;
+  });
+  localStorage.setItem('ecn_decision', JSON.stringify(decisionData));
+  updateStageDisplay();
+}
+
+function loadDecisionData(){
+  DQ_FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && decisionData[id]) el.value = decisionData[id];
+  });
+  // Add change listeners
+  DQ_FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('change', saveDecisionData);
+  });
+  updateStageDisplay();
+}
+
+function updateStageDisplay(){
+  const stage = decisionData['dq-stage'] || '';
+  const display = document.getElementById('stage-display');
+  const box = document.getElementById('stage-assessment-box');
+  if(!display || !box) return;
+
+  if(stage && STAGE_INFO[stage]){
+    const info = STAGE_INFO[stage];
+    display.innerHTML = `<strong>${info.label}</strong> — ${info.desc}`;
+    box.style.borderLeftColor = info.color;
+    box.style.borderLeftWidth = '4px';
+    box.style.borderLeftStyle = 'solid';
+  } else {
+    display.innerHTML = 'Not yet selected. Go to the <a href="#" onclick="showTab(\'decision\',document.querySelector(\'nav button:nth-child(8)\'));return false;" style="color:inherit;text-decoration:underline;">What Next</a> tab to set your loved one\'s current stage.';
+    box.style.borderLeftColor = '';
+    box.style.borderLeftWidth = '';
+    box.style.borderLeftStyle = '';
+  }
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', function(){
+  renderFacs();
+  renderTracker();
+  buildEvalSliders();
+  buildWtSliders();
+  buildHomeCare();
+  buildStages();
+  buildEntitlements();
+  buildResources();
+  buildShare();
+  loadFamilyData();
+  loadDecisionData();
+  popEvalSel();
+  populateTourSelect();
+  updateProgress();
+});
+</script>
+</body>
+</html>
