@@ -326,7 +326,7 @@ textarea{min-height:60px;resize:vertical;}
   <span class="lbl">Filter by source:</span>
   <span class="sbadge all active" onclick="filterSrc('all')">All</span>
   <span class="sbadge fr" onclick="filterSrc('fr')">👩 Friend</span>
-  <span class="sbadge br" onclick="filterSrc('br')">👨‍⚕ Brother</span>
+  <span class="sbadge br" onclick="filterSrc('br')">👨‍⚕ Ravi</span>
   <span class="sbadge bo" onclick="filterSrc('bo')">↔ Both</span>
   <span class="sbadge me" onclick="filterSrc('me')">✎ Mine</span>
   <span class="sbadge ex" onclick="filterSrc('ex')">🔍 Exploring</span>
@@ -386,6 +386,102 @@ textarea{min-height:60px;resize:vertical;}
   </div>
 </div>
 
+<!-- REVIEWED BY MODAL -->
+<div class="modal-overlay" id="reviewedby-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h3 id="reviewedby-title">Who Reviewed This?</h3>
+      <button class="modal-close" onclick="closeReviewedByModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">Select who has visited or reviewed this facility:</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px;">
+          <input type="radio" name="reviewedby" value="ravi"> <strong>Ravi</strong>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px;">
+          <input type="radio" name="reviewedby" value="nalini"> <strong>Nalini</strong>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px;">
+          <input type="radio" name="reviewedby" value="both"> <strong>Both</strong>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px;">
+          <input type="radio" name="reviewedby" value=""> <span style="color:var(--muted);">Not yet reviewed</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-s" onclick="closeReviewedByModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveReviewedBy()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT FACILITY MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="edit-title">Edit Facility</h3>
+      <button class="modal-close" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg2">
+        <div><label class="fl">Phone</label><input type="text" id="edit-phone" placeholder="416-xxx-xxxx"></div>
+        <div><label class="fl">Website</label><input type="text" id="edit-website" placeholder="https://..."></div>
+      </div>
+      <div class="fg2">
+        <div><label class="fl">Cost Range</label><input type="text" id="edit-cost" placeholder="$X,XXX-$X,XXX/mo"></div>
+        <div><label class="fl">Waitlist Info</label><input type="text" id="edit-waitlist" placeholder="e.g. 500 waitlist"></div>
+      </div>
+      <div class="fg2">
+        <div><label class="fl">Source</label>
+          <select id="edit-source">
+            <option value="fr">Friend</option>
+            <option value="br">Ravi</option>
+            <option value="bo">Both</option>
+            <option value="me">Mine</option>
+            <option value="ex">Exploring</option>
+          </select>
+        </div>
+        <div><label class="fl">Status</label>
+          <select id="edit-status">
+            <option value="pend">Not Yet Visited</option>
+            <option value="booked">Tour Booked</option>
+            <option value="qx">Visited — Questions Remain</option>
+            <option value="like">Visited & Liked</option>
+            <option value="star">Standout</option>
+            <option value="no">Ruled Out</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg2">
+        <div><label class="fl">Score (1-5)</label>
+          <select id="edit-score">
+            <option value="0">Not rated</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div><label class="fl">Reviewed By</label>
+          <select id="edit-reviewedby">
+            <option value="">Not yet reviewed</option>
+            <option value="ravi">Ravi</option>
+            <option value="nalini">Nalini</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-s" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
@@ -395,7 +491,13 @@ textarea{min-height:60px;resize:vertical;}
   <h2>Toronto & GTA Facilities Guide</h2>
   <p class="s-intro">Compiled from two independent sources: a friend's ground-level family research (visits, scores, gut reactions) and a physician's curated rated list. Where sources overlap, both perspectives appear on the same card. Costs are approximate 2025-2026 figures.</p>
 
-  <div class="box info"><strong>How Ontario LTC works:</strong> Government-funded Long-Term Care requires eligibility assessment through <strong>Ontario Health atHome — call 310-2222</strong>. You may list up to 5 homes. Private retirement homes are applied to directly. These are completely separate streams with separate waitlists.</div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="box info" style="margin-bottom:0;"><strong>🔍 Search Inspection Reports:</strong><br>
+      <a href="https://publicreporting.ltchomes.net/en-ca/search.aspx" target="_blank" style="font-weight:700;">LTC Homes (Government) →</a> — Search by name or city<br>
+      <a href="https://www.rhra.ca/en/register/" target="_blank" style="font-weight:700;">Retirement Homes (Private) →</a> — RHRA Registry
+    </div>
+    <div class="box info" style="margin-bottom:0;"><strong>How Ontario LTC works:</strong> Government-funded Long-Term Care requires eligibility assessment through <strong>Ontario Health atHome — call 310-2222</strong>. You may list up to 5 homes. Private retirement homes are applied to directly.</div>
+  </div>
 
   <div class="quiet-note">You didn't plan to become an expert in elder care. Nobody does. The fact that you're here, building a plan — that is love made practical.</div>
 
@@ -441,6 +543,7 @@ textarea{min-height:60px;resize:vertical;}
         <option value="status">Status</option>
         <option value="cost">Cost</option>
         <option value="source">Source</option>
+        <option value="reviewedby">Reviewed By</option>
         <option value="waitlist">Waitlist</option>
       </select>
       <div class="sep"></div>
@@ -496,7 +599,7 @@ textarea{min-height:60px;resize:vertical;}
           </select>
         </div>
       </div>
-      <div class="fg2">
+      <div class="fg3">
         <div><label class="fl">Your Score (tap stars)</label>
           <div class="star-row" id="af-stars">
             <span onclick="setStar(1)">★</span><span onclick="setStar(2)">★</span>
@@ -506,6 +609,14 @@ textarea{min-height:60px;resize:vertical;}
           <input type="hidden" id="af-score" value="0">
         </div>
         <div><label class="fl">Waitlist Info</label><input type="text" id="af-wait" placeholder="150 beds / 400 waitlist"></div>
+        <div><label class="fl">Reviewed By</label>
+          <select id="af-reviewedby">
+            <option value="">Not yet reviewed</option>
+            <option value="ravi">Ravi</option>
+            <option value="nalini">Nalini</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
       </div>
       <div style="margin-bottom:10px;"><label class="fl">Notes</label>
         <textarea id="af-notes" placeholder="Visit impressions, contacts, questions..."></textarea>
@@ -524,6 +635,7 @@ textarea{min-height:60px;resize:vertical;}
         <th>Facility</th>
         <th>Phone</th>
         <th>Source</th>
+        <th>Reviewed By</th>
         <th>Status</th>
         <th>Score</th>
         <th>Cost</th>
@@ -962,11 +1074,24 @@ const CRIT = [{id:'dementia',l:'Dementia Care'},{id:'couples',l:'Couples'},{id:'
 
 function allFacs(){
   const facUpdates = JSON.parse(localStorage.getItem('ecn_fac_updates')||'{}');
+  const facEditsData = JSON.parse(localStorage.getItem('ecn_fac_edits')||'{}');
   const updatedFacs = FACS.map(f => {
+    let updated = {...f};
     if(facUpdates[f.id]){
-      return {...f, status: facUpdates[f.id].status || f.status, score: facUpdates[f.id].score || f.score};
+      updated.status = facUpdates[f.id].status || f.status;
+      updated.score = facUpdates[f.id].score ?? f.score;
     }
-    return f;
+    if(facEditsData[f.id]){
+      const e = facEditsData[f.id];
+      if(e.ph) updated.ph = e.ph;
+      if(e.site) updated.site = e.site;
+      if(e.wl) updated.wl = e.wl;
+      if(e.src) updated.src = e.src;
+      if(e.status) updated.status = e.status;
+      if(e.score !== undefined) updated.score = e.score;
+      if(e.reviewedBy) updated.reviewedBy = e.reviewedBy;
+    }
+    return updated;
   });
   return [...updatedFacs, ...userFacs];
 }
@@ -1017,7 +1142,7 @@ function renderFacs(){
 
 function renderFacCard(f){
   const tc = f.tier===1?'t1':f.tier===2?'t2':'t3';
-  const srcTag = {fr:'<span class="stag fr">Friend</span>',br:'<span class="stag br">Brother</span>',bo:'<span class="stag bo">Both</span>',me:'<span class="stag me">Mine</span>',ex:'<span class="stag ex">Exploring</span>'}[f.src]||'';
+  const srcTag = {fr:'<span class="stag fr">Friend</span>',br:'<span class="stag br">Ravi</span>',bo:'<span class="stag bo">Both</span>',me:'<span class="stag me">Mine</span>',ex:'<span class="stag ex">Exploring</span>'}[f.src]||'';
   const bs = f.bstar ? `<span class="spill">${f.bstar}★</span>` : '';
   const fs = f.score>0 ? `<span class="spill">${f.score}/5</span>` : '';
   const costData = costUpdates[f.id];
@@ -1026,10 +1151,6 @@ function renderFacCard(f){
   const ph = f.ph ? `<a href="tel:${f.ph.replace(/[^0-9]/g,'')}" class="call-btn">📞 Call</a>` : '';
   const mapLink = f.loc ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(f.loc)}" target="_blank" class="map-btn">📍 Map</a>` : '';
   const siteLink = f.site ? `<a href="${f.site}" target="_blank">Website ↗</a>` : '';
-  const isLTC = f.web && f.web.includes('ltchomes.net');
-  const isRHRA = f.web && f.web.includes('rhra.ca');
-  const reportLabel = isLTC ? 'LTC Inspection ↗' : (isRHRA ? 'RHRA Registry ↗' : 'Inspection ↗');
-  const reportLink = f.web ? `<a href="${f.web}" target="_blank">${reportLabel}</a>` : '';
 
   // Family feedback from notes
   const feedback = userNotes[f.id] || f.notes || '';
@@ -1050,7 +1171,7 @@ function renderFacCard(f){
 
   return `<div class="fcard ${tc}">
     <div class="ftop">
-      <div><div class="fname">${f.n} ${srcTag}</div><div class="fmeta">${f.loc} ${ph} ${mapLink} ${siteLink} ${reportLink}</div></div>
+      <div><div class="fname">${f.n} ${srcTag}</div><div class="fmeta">${f.loc} ${ph} ${mapLink} ${siteLink}</div></div>
       <div class="fpills">${costBadge}<span class="cpill">${costDisplay}</span>${bs}${fs}</div>
     </div>
     <div class="tags">${(f.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
@@ -1084,13 +1205,15 @@ function renderTracker(){
   else if(sort==='status') facs.sort((a,b)=>({star:1,like:2,booked:3,qx:4,pend:5,no:6}[a.status]||5)-({star:1,like:2,booked:3,qx:4,pend:5,no:6}[b.status]||5));
   else if(sort==='cost') facs.sort((a,b)=>parseCost(a.cost)-parseCost(b.cost));
   else if(sort==='source') facs.sort((a,b)=>(a.src||'').localeCompare(b.src||''));
+  else if(sort==='reviewedby') facs.sort((a,b)=>{const ra=getReviewedBy(a.id)||a.reviewedBy||''; const rb=getReviewedBy(b.id)||b.reviewedBy||''; return ra.localeCompare(rb);});
   else if(sort==='waitlist') facs.sort((a,b)=>parseWaitlist(a.wl)-parseWaitlist(b.wl));
   else facs.sort((a,b)=>a.n.localeCompare(b.n));
 
   const stMap = {star:'sp-star',like:'sp-like',qx:'sp-qx',no:'sp-no',pend:'sp-pend',booked:'sp-booked'};
   const stLbl = {star:'★ Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
-  const srcLbl = {fr:'Friend',br:'Brother',bo:'Both',me:'Mine',ex:'Exploring'};
+  const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
 
+  const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
   tb.innerHTML = facs.map(f=>{
     const sc = Math.max(f.score||0, f.bstar||0);
     const scCls = sc>=5?'s5':sc>=4?'s4':sc>=3?'s3':sc>=2?'s2':sc>=1?'s1':'s0';
@@ -1100,16 +1223,19 @@ function renderTracker(){
     const notePreview = noteData.length>25 ? noteData.substring(0,25)+'...' : (noteData||'+ Add');
     const nameLink = f.site ? `<a href="${f.site}" target="_blank" style="color:var(--navy);text-decoration:underline;">${f.n}</a>` : f.n;
     const phoneDisplay = f.ph ? `<a href="tel:${f.ph.replace(/[^0-9]/g,'')}" style="white-space:nowrap;color:var(--teal);font-size:.78rem;">${f.ph}</a>` : '-';
+    const reviewedBy = getReviewedBy(f.id) || f.reviewedBy || '';
+    const revDisplay = reviewedBy ? `<span class="stag ${reviewedBy==='both'?'bo':reviewedBy==='ravi'?'br':'me'}">${revLbl[reviewedBy]||'-'}</span>` : '<span style="color:var(--muted);font-size:.75rem;">-</span>';
     return `<tr>
       <td><strong>${nameLink}</strong></td>
       <td>${phoneDisplay}</td>
       <td><span class="stag ${f.src}">${srcLbl[f.src]||''}</span></td>
+      <td style="cursor:pointer;" onclick="openReviewedByModal('${f.id}')">${revDisplay}</td>
       <td><span class="sp ${stMap[f.status]||'sp-pend'}">${stLbl[f.status]||'Pending'}</span></td>
       <td><span class="sdot ${scCls}">${sc||'-'}</span></td>
       <td style="cursor:pointer;text-decoration:underline dotted;" onclick="openCostModal('${f.id}')">${costDisplay}</td>
       <td style="font-size:.78rem;">${f.wl||'-'}</td>
       <td><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openNotesModal('${f.id}')">${notePreview}</button></td>
-      <td>${f._u?`<button class="btn btn-d" onclick="removeFac('${f.id}')">✕</button>`:''}</td>
+      <td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openEditModal('${f.id}')">✎</button>${f._u?`<button class="btn btn-d" onclick="removeFac('${f.id}')">✕</button>`:''}</td>
     </tr>`;
   }).join('');
   popEvalSel();
@@ -1122,22 +1248,113 @@ function parseWaitlist(wl){
   return m ? parseInt(m[1]) : 99999;
 }
 
+// Reviewed By tracking
+let reviewedByData = JSON.parse(localStorage.getItem('ecn_reviewedby')||'{}');
+let editingReviewedById = null;
+
+function getReviewedBy(id){ return reviewedByData[id] || ''; }
+
+function openReviewedByModal(id){
+  editingReviewedById = id;
+  const f = allFacs().find(x=>x.id===id);
+  document.getElementById('reviewedby-title').textContent = 'Who Reviewed: ' + f.n;
+  const current = getReviewedBy(id) || f.reviewedBy || '';
+  document.querySelectorAll('input[name="reviewedby"]').forEach(r => r.checked = r.value === current);
+  document.getElementById('reviewedby-modal').classList.add('show');
+}
+
+function closeReviewedByModal(){ document.getElementById('reviewedby-modal').classList.remove('show'); editingReviewedById=null; }
+
+function saveReviewedBy(){
+  if(!editingReviewedById) return;
+  const val = document.querySelector('input[name="reviewedby"]:checked')?.value || '';
+  reviewedByData[editingReviewedById] = val;
+  localStorage.setItem('ecn_reviewedby', JSON.stringify(reviewedByData));
+  closeReviewedByModal();
+  renderTracker();
+  renderFacs();
+}
+
+// Edit Facility
+let facEdits = JSON.parse(localStorage.getItem('ecn_fac_edits')||'{}');
+let editingFacIdEdit = null;
+
+function openEditModal(id){
+  editingFacIdEdit = id;
+  const f = allFacs().find(x=>x.id===id);
+  const edits = facEdits[id] || {};
+  document.getElementById('edit-title').textContent = 'Edit: ' + f.n;
+  document.getElementById('edit-phone').value = edits.ph || f.ph || '';
+  document.getElementById('edit-website').value = edits.site || f.site || '';
+  document.getElementById('edit-cost').value = edits.cost || (costUpdates[id]?.cost) || f.cost || '';
+  document.getElementById('edit-waitlist').value = edits.wl || f.wl || '';
+  document.getElementById('edit-source').value = edits.src || f.src || 'ex';
+  document.getElementById('edit-status').value = edits.status || f.status || 'pend';
+  document.getElementById('edit-score').value = edits.score ?? f.score ?? 0;
+  document.getElementById('edit-reviewedby').value = edits.reviewedBy || getReviewedBy(id) || f.reviewedBy || '';
+  document.getElementById('edit-modal').classList.add('show');
+}
+
+function closeEditModal(){ document.getElementById('edit-modal').classList.remove('show'); editingFacIdEdit=null; }
+
+function saveEdit(){
+  if(!editingFacIdEdit) return;
+  const id = editingFacIdEdit;
+  const edits = {
+    ph: document.getElementById('edit-phone').value,
+    site: document.getElementById('edit-website').value,
+    cost: document.getElementById('edit-cost').value,
+    wl: document.getElementById('edit-waitlist').value,
+    src: document.getElementById('edit-source').value,
+    status: document.getElementById('edit-status').value,
+    score: parseInt(document.getElementById('edit-score').value) || 0,
+    reviewedBy: document.getElementById('edit-reviewedby').value
+  };
+
+  // Save edits
+  facEdits[id] = edits;
+  localStorage.setItem('ecn_fac_edits', JSON.stringify(facEdits));
+
+  // Also update cost and reviewedBy in their respective stores
+  if(edits.cost){
+    costUpdates[id] = {cost: edits.cost, date: new Date().toISOString().split('T')[0]};
+    localStorage.setItem('ecn_costs', JSON.stringify(costUpdates));
+  }
+  if(edits.reviewedBy !== undefined){
+    reviewedByData[id] = edits.reviewedBy;
+    localStorage.setItem('ecn_reviewedby', JSON.stringify(reviewedByData));
+  }
+
+  // Update fac_updates for status/score
+  let facUpdates = JSON.parse(localStorage.getItem('ecn_fac_updates')||'{}');
+  facUpdates[id] = {status: edits.status, score: edits.score};
+  localStorage.setItem('ecn_fac_updates', JSON.stringify(facUpdates));
+
+  closeEditModal();
+  renderFacs();
+  renderTracker();
+  alert('Changes saved!');
+}
+
 function exportTracker(format){
   const facs = allFacs();
   const stLbl = {star:'Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
-  const srcLbl = {fr:'Friend',br:'Brother',bo:'Both',me:'Mine',ex:'Exploring'};
+  const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
+  const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
 
-  const headers = ['Facility','Phone','Website','Source','Status','Score','Cost','Waitlist','Notes'];
+  const headers = ['Facility','Phone','Website','Source','Reviewed By','Status','Score','Cost','Waitlist','Notes'];
   const rows = facs.map(f=>{
     const costData = costUpdates[f.id];
     const costDisplay = costData ? costData.cost : f.cost;
     const noteData = userNotes[f.id] || f.notes || '';
     const sc = Math.max(f.score||0, f.bstar||0);
+    const reviewedBy = getReviewedBy(f.id) || f.reviewedBy || '';
     return [
       f.n,
       f.ph || '',
       f.site || '',
       srcLbl[f.src] || '',
+      revLbl[reviewedBy] || '',
       stLbl[f.status] || 'Pending',
       sc || '',
       costDisplay,
@@ -1164,12 +1381,15 @@ function setStar(n){ starVal=n; document.getElementById('af-score').value=n; doc
 function addFac(){
   const name = document.getElementById('af-name').value.trim();
   if(!name){alert('Enter a name.');return;}
-  const f = {id:'u_'+Date.now(),_u:true,n:name,tier:+document.getElementById('af-tier').value,loc:document.getElementById('af-loc').value,ph:document.getElementById('af-phone').value,web:'',site:document.getElementById('af-web').value,cost:document.getElementById('af-cost').value||'TBD',src:document.getElementById('af-src').value,status:document.getElementById('af-status').value,score:+document.getElementById('af-score').value,bstar:null,wl:document.getElementById('af-wait').value||'Unknown',wc:'wc-o',notes:document.getElementById('af-notes').value,tags:[],pros:[],cons:[],cpl:[]};
+  const reviewedBy = document.getElementById('af-reviewedby').value;
+  const f = {id:'u_'+Date.now(),_u:true,n:name,tier:+document.getElementById('af-tier').value,loc:document.getElementById('af-loc').value,ph:document.getElementById('af-phone').value,web:'',site:document.getElementById('af-web').value,cost:document.getElementById('af-cost').value||'TBD',src:document.getElementById('af-src').value,status:document.getElementById('af-status').value,score:+document.getElementById('af-score').value,bstar:null,wl:document.getElementById('af-wait').value||'Unknown',wc:'wc-o',notes:document.getElementById('af-notes').value,reviewedBy:reviewedBy,tags:[],pros:[],cons:[],cpl:[]};
   userFacs.push(f);
   localStorage.setItem('ecn_facs',JSON.stringify(userFacs));
+  if(reviewedBy){ reviewedByData[f.id] = reviewedBy; localStorage.setItem('ecn_reviewedby', JSON.stringify(reviewedByData)); }
   ['af-name','af-loc','af-phone','af-web','af-cost','af-wait','af-notes'].forEach(id=>document.getElementById(id).value='');
   starVal=0; document.querySelectorAll('#af-stars span').forEach(s=>s.classList.remove('lit'));
   document.getElementById('af-score').value='0';
+  document.getElementById('af-reviewedby').value='';
   document.getElementById('add-panel').removeAttribute('open');
   renderFacs(); renderTracker();
 }
