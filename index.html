@@ -55,6 +55,13 @@ nav button.active{color:var(--gold-l);border-bottom-color:var(--gold-l);}
 
 
 /* RESPITE TAB */
+.rs-bar{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;align-items:center;background:white;border:1px solid var(--border);border-radius:6px;padding:5px 8px;margin-bottom:6px;box-shadow:var(--shadow);scrollbar-width:thin;}
+.rs-bar select,.rs-bar input{border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:.76rem;font-family:'Source Sans 3',sans-serif;flex:0 0 auto;max-width:150px;}
+.rs-bar input{width:110px;}
+.rs-tog{display:inline-flex;flex:0 0 auto;border:1px solid var(--teal);border-radius:14px;overflow:hidden;}
+.rs-tog button{border:none;background:white;color:var(--teal);font-size:.74rem;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap;font-family:'Source Sans 3',sans-serif;}
+.rs-tog button.on{background:var(--teal);color:white;}
+
 .rs-switch{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px;}
 .rs-switch button{flex:1;min-width:240px;text-align:left;background:white;border:2px solid var(--border);border-radius:10px;padding:12px 16px;cursor:pointer;font-family:'Source Sans 3',sans-serif;box-shadow:var(--shadow);}
 .rs-switch button strong{display:block;font-size:.98rem;color:var(--navy);}
@@ -439,6 +446,31 @@ textarea{min-height:60px;resize:vertical;}
   </div>
 </div>
 
+
+<!-- RESPITE RECORD MODAL -->
+<div class="modal-overlay" id="rs-modal" onclick="if(event.target===this)closeRsModal()">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <h3 id="rs-m-title">Respite place</h3>
+      <button class="modal-close" onclick="closeRsModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="max-height:65vh;overflow:auto;">
+      <div id="rs-m-info" style="font-size:.84rem;margin-bottom:12px;"></div>
+      <div class="fg2">
+        <div><label class="fl">Reviewed By</label>
+          <select id="rs-m-rv"><option value="">Not yet reviewed</option><option value="ravi">Ravi</option><option value="nalini">Nalini</option><option value="both">Both</option></select>
+        </div>
+        <div><label class="fl">Status</label><select id="rs-m-st"></select></div>
+      </div>
+      <div><label class="fl">Notes</label><textarea id="rs-m-note" placeholder="Who you spoke to, what they said, impressions..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-s" onclick="closeRsModal()">← Back to tracker</button>
+      <button class="btn btn-p" onclick="saveRsModal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT FACILITY MODAL -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
@@ -551,59 +583,49 @@ textarea{min-height:60px;resize:vertical;}
 
 <!-- TAB 1b: SHORT-TERM RESPITE -->
 <div id="tab-respite" class="tab">
-  <div class="tab-purpose">Short-Term Respite — where Dad can stay for weeks to ~3 months</div>
-  <h2>Short-Term Respite Care</h2>
-  <p class="s-intro">70 places researched Oct 25, 2026 from the Ontario Health atHome directories, closest to Toronto first. Every card links its source and the date that source was last updated. Bed availability changes daily — the phone call is always the final check.</p>
+  <h2 style="margin-bottom:2px;">Short-Term Respite Care</h2>
+  <p class="s-intro" style="margin-bottom:8px;">70 places, researched Oct 25, 2026 · closest to Toronto first · always confirm by phone.</p>
 
-  <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Which situation are we planning for?</div>
-  <div class="rs-switch">
-    <button id="rs-sw-A" class="on" onclick="setRsGroup('A')"><strong>Group 1 — Stage 4–5, delirium settles</strong><span>Dementia care + a locked unit is enough</span></button>
-    <button id="rs-sw-B" onclick="setRsGroup('B')"><strong>Group 2 — More extreme: 24/7 PSW support</strong><span>Round-the-clock staff, on-site nursing, or our own private PSW allowed</span></button>
-  </div>
+  <details class="box urgent" style="font-size:.82rem;padding:8px 12px;margin-bottom:8px;">
+    <summary style="cursor:pointer;font-weight:700;">📞 What to say and ask on every call (tap to open)</summary>
+    <div style="margin-top:6px;"><strong>Say:</strong> "Stage 4–5 dementia, currently with acute delirium (may be from an infection). He does not sleep. Looking for a stay of up to 3 months starting around Friday, October 30." <strong>Ask:</strong> Is a bed open? Is the room inside the locked unit? Can we bring in our own private PSW? Is a nurse on site overnight? What paperwork before admission (doctor's form, TB test, x-ray)?</div>
+  </details>
 
-  <div class="box urgent" style="font-size:.84rem;"><strong>Say on every call:</strong> "Stage 4–5 dementia, currently with acute delirium (may be from an infection). He does not sleep. Looking for a stay of up to 3 months starting around Friday, October 30." <strong>Ask:</strong> Is a bed open? Is the room inside the locked unit? Can we bring in our own private PSW? Is a nurse on site overnight? What paperwork before admission (doctor's form, TB test, x-ray)?</div>
-
-  <div style="margin-bottom:6px;">
-    <div class="filter-bar" style="flex-wrap:wrap;">
-      <label>Show:</label>
-      <select id="rs-fit" onchange="renderRespite()">
-        <option value="good">Strong + Possible</option>
-        <option value="Strong">Strong only</option>
-        <option value="all">Everything</option>
-        <option value="Ruled out">Ruled out</option>
-      </select>
-      <div class="sep"></div>
-      <label>Distance:</label>
-      <select id="rs-band" onchange="renderRespite()">
-        <option value="all">All</option>
-        <option value="Central Toronto">Central Toronto</option>
-        <option value="Inner Toronto">Inner Toronto</option>
-        <option value="Just outside Toronto">Just outside Toronto</option>
-        <option value="Outer GTA">Outer GTA</option>
-      </select>
-      <div class="sep"></div>
-      <label>Type:</label>
-      <select id="rs-grp" onchange="renderRespite()">
-        <option value="all">All</option>
-        <option value="A">Dementia + locked unit + respite</option>
-        <option value="B">Respite houses (non-profit)</option>
-        <option value="C">Public LTC short-stay beds</option>
-        <option value="D">Private homes with memory care</option>
-        <option value="E">Private, no dementia care</option>
-      </select>
-      <div class="sep"></div>
-      <label>Our status:</label>
-      <select id="rs-st" onchange="renderRespite()">
-        <option value="all">All</option>
-        <option value="">Not called</option>
-        <option value="called">Called — waiting</option>
-        <option value="bed">Bed available</option>
-        <option value="tour">Tour booked</option>
-        <option value="no">Said no / full</option>
-      </select>
-      <div class="sep"></div>
-      <input type="text" id="rs-search" placeholder="🔍 Search..." oninput="renderRespite()">
-    </div>
+  <div class="rs-bar">
+    <span class="rs-tog"><button id="rs-sw-A" class="on" onclick="setRsGroup('A')" title="Stage 4–5, delirium settles: dementia care + locked unit is enough">Group 1 · Stage 4–5</button><button id="rs-sw-B" onclick="setRsGroup('B')" title="More extreme: round-the-clock staff, on-site nursing, or our own private PSW">Group 2 · 24/7 PSW</button></span>
+    <select id="rs-fit" onchange="renderRespite()" title="Fit">
+      <option value="good">Strong + Possible</option>
+      <option value="Strong">Strong only</option>
+      <option value="all">All fits</option>
+      <option value="Ruled out">Ruled out</option>
+    </select>
+    <select id="rs-band" onchange="renderRespite()" title="Distance">
+      <option value="all">Any distance</option>
+      <option value="Central Toronto">Central Toronto</option>
+      <option value="Inner Toronto">Inner Toronto</option>
+      <option value="Just outside Toronto">Just outside</option>
+      <option value="Outer GTA">Outer GTA</option>
+    </select>
+    <select id="rs-grp" onchange="renderRespite()" title="Type of place">
+      <option value="all">Any type</option>
+      <option value="A">Dementia + locked unit</option>
+      <option value="B">Respite houses</option>
+      <option value="C">Public LTC beds</option>
+      <option value="D">Private memory care</option>
+      <option value="E">Private, no dementia care</option>
+    </select>
+    <select id="rs-st" onchange="renderRespite()" title="Our status">
+      <option value="all">Any status</option>
+      <option value="">Not called</option>
+      <option value="called">Called — waiting</option>
+      <option value="bed">Bed available</option>
+      <option value="tour">Tour booked</option>
+      <option value="qx">Visited — questions remain</option>
+      <option value="like">Visited & liked</option>
+      <option value="star">Standout</option>
+      <option value="no">Said no / ruled out</option>
+    </select>
+    <input type="text" id="rs-search" placeholder="🔍 Search" oninput="renderRespite()">
   </div>
   <div class="rs-count" id="rs-count"></div>
   <div id="rs-out" class="fgrid"></div>
@@ -1148,6 +1170,63 @@ const FACS = [
   {id:'t3b',dem:false,n:'Hazelton Place',loc:'111 Avenue Rd, Toronto',ph:'416-928-0111',web:'https://www.rhra.ca/en/register/',site:'https://verveseniorliving.com/hazelton-place/',cost:'$7,490-$15,000/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.5,beds:'unknown',wl:'Direct admission',wc:'wc-s',tags:['Verve Senior Living','Yorkville','Assisted Living Floor'],pros:['Brother 4.5★','Premium Yorkville location','Self-contained assisted living floor'],cons:['Very high cost','Limited availability'],cpl:['Ask about companion suites'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Operated by Verve Senior Living</strong> - One of Canada\'s largest senior living operators with 25+ communities.</p><p><strong>Premium Yorkville Location:</strong> Steps from galleries, boutiques, restaurants. Urban lifestyle for active seniors.</p><p><strong>Care Levels:</strong> Independent Living with option to add services. Dedicated Assisted Living floor with 24/7 care staff.</p><p><strong>Amenities:</strong> Fine dining, bistro, fitness centre, spa, rooftop terrace, library, art studio, concierge services.</p><p><strong>Healthcare:</strong> Registered staff on-site. Partnerships with nearby hospitals including Sunnybrook and Mount Sinai.</p><p><strong>Suites:</strong> Studio to 2-bedroom options. Some couples suites available - inquire about availability.</p>'},
   {id:'t3c',n:'Baycrest Terraces',loc:'55 Ameer Ave, Toronto',ph:'416-785-2379',web:'https://www.rhra.ca/en/register/',site:'https://www.baycrestterraces.com/',cost:'$18,000-$19,500/mo',tier:3,src:'br',status:'pend',score:0,bstar:4.1,beds:'182 suites',wl:'Contact directly',wc:'wc-m',tags:['Baycrest Research-Backed','Memory Care','Jewish/Kosher'],pros:['Brother 4.1★','182 suites - IL, AL, Memory Care','World-class neuroscience research'],cons:['HIGHEST cost: $18-19.5K','Kosher/Jewish focus'],cpl:['Multiple care levels on campus'],notes:'Email BaycrestTerraces@Baycrest.org',details:'<p class="sec-label">From Website</p><p><strong>Part of Baycrest</strong> - World-renowned academic health sciences centre specializing in aging and brain health.</p><p><strong>182 suites</strong> offering Independent Living, Assisted Living, and Memory Care on the same campus.</p><p><strong>Research-Backed Care:</strong> Programs developed by Baycrest\'s Rotman Research Institute. Access to clinical trials and latest dementia interventions.</p><p><strong>Memory Care:</strong> "Baycrest at Home" philosophy - familiar, home-like environment with specialized dementia programming.</p><p><strong>Jewish Heritage:</strong> Kosher dining, Jewish cultural programming, Shabbat observance. Open to all faiths but Jewish cultural focus.</p><p><strong>Healthcare:</strong> On-campus access to Baycrest Hospital, geriatric specialists, and allied health professionals.</p>'},
   {id:'t3d',n:'Sagecare',loc:'147 Elder St, Toronto',ph:'416-792-7243',web:'https://www.rhra.ca/en/register/',site:'https://www.sagecare.ca',cost:'$12,750-$16,000/mo',tier:3,src:'br',status:'pend',score:0,bstar:3.8,beds:'12',wl:'Contact directly',wc:'wc-o',tags:['Dementia-Only','1:4 Staff Ratio','Locked Pricing'],pros:['Dementia-only environment','1:4 staff ratio','No price escalation'],cons:['Brother lowest 3.8★','Small group home'],cpl:['Individual placement only'],notes:''},
+  // ---- June 2026 research: memory-care places (added Oct 26, 2026) ----
+  {"id": "j7", "n": "Amica Bayview Village", "loc": "North York", "ph": "416-223-0550", "web": "", "site": "https://www.amica.ca/bayview", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "North York"], "pros": ["Top-rated, dedicated Memory Care program"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Top-rated, dedicated Memory Care program</p>"},
+  {"id": "j8", "n": "Chartwell Grenadier", "loc": "Toronto - High Park", "ph": "416-769-2090", "web": "", "site": "https://chartwell.com/on/toronto/grenadier", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Toronto - High Park"], "pros": ["Memory care suites in secure assisted living neighborhood, High Park location"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Memory care suites in secure assisted living neighborhood, High Park location</p>"},
+  {"id": "j9", "n": "Delmanor Wynford", "loc": "North York - Don Mills", "ph": "416-331-9797", "web": "", "site": "https://delmanor.com/wynford/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "North York - Don Mills"], "pros": ["MemoryPlus dementia-friendly neighbourhood, Don Valley views"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>MemoryPlus dementia-friendly neighbourhood, Don Valley views</p>"},
+  {"id": "j10", "n": "Sunrise of Thornhill", "loc": "Thornhill", "ph": "905-731-6646", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-thornhill", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Thornhill"], "pros": ["IL, AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>IL, AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j11", "n": "Amica Thornhill", "loc": "Thornhill", "ph": "905-889-1113", "web": "", "site": "https://www.amica.ca/thornhill", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Thornhill"], "pros": ["Dedicated Memory Care program, certified dementia care planning"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Dedicated Memory Care program, certified dementia care planning</p>"},
+  {"id": "j20", "n": "St. Clair O'Connor Community", "loc": "Toronto - East End", "ph": "416-757-8757", "web": "", "site": "https://scocc.ca/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "25", "wl": "209 waitlist", "wc": "wc-l", "tags": ["Memory Care", "Toronto - East End"], "pros": ["Eden Model care, intimate 25-bed home"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Eden Model care, intimate 25-bed home</p>"},
+  {"id": "j22", "n": "Yee Hong Scarborough Finch", "loc": "Scarborough", "ph": "416-321-6333", "web": "", "site": "https://www.yeehong.com/centre/long-term-care/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "250", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Scarborough"], "pros": ["Yee Hong, Alzheimer unit, culturally appropriate Chinese/Asian care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Yee Hong, Alzheimer unit, culturally appropriate Chinese/Asian care</p>"},
+  {"id": "j23", "n": "Yee Hong Scarborough McNicoll", "loc": "Scarborough", "ph": "416-321-6333", "web": "", "site": "https://www.yeehong.com/centre/long-term-care/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "155", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Scarborough"], "pros": ["Yee Hong, Alzheimer unit, culturally appropriate care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Yee Hong, Alzheimer unit, culturally appropriate care</p>"},
+  {"id": "j25", "n": "Verve Don Mills", "loc": "North York - Don Mills", "ph": "416-331-9600", "web": "", "site": "https://verveseniorliving.com/don-mills-retirement-residence/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "North York - Don Mills"], "pros": ["IL to Memory Care continuum, good for couples with different needs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>IL to Memory Care continuum, good for couples with different needs</p>"},
+  {"id": "j26", "n": "Sunrise of Burlington", "loc": "Burlington", "ph": "905-319-8800", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-burlington", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Burlington"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j27", "n": "Maple Villa Long Term Care", "loc": "Burlington", "ph": "905-639-3838", "web": "", "site": "https://www.maplevillalongtermcare.com/", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "93", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Burlington"], "pros": ["Independent 93-bed, accredited, new 256-bed home opening Fall 2026"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Independent 93-bed, accredited, new 256-bed home opening Fall 2026</p>"},
+  {"id": "j28", "n": "Allendale (Halton Region)", "loc": "Milton", "ph": "905-825-6000", "web": "", "site": "https://www.halton.ca/for-residents/older-adults/long-term-care-homes", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Milton"], "pros": ["Halton Region operated"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Halton Region operated</p>"},
+  {"id": "j29", "n": "Creek Way Village (Halton Region)", "loc": "Burlington", "ph": "905-825-6000", "web": "", "site": "https://www.halton.ca/for-residents/older-adults/long-term-care-homes", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Burlington"], "pros": ["Halton Region operated"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Halton Region operated</p>"},
+  {"id": "j30", "n": "Post Inn Village (Halton Region)", "loc": "Oakville", "ph": "905-825-6000", "web": "", "site": "https://www.halton.ca/for-residents/older-adults/long-term-care-homes", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "228", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oakville"], "pros": ["Halton Region, 228 beds, cognitive impairment services"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Halton Region, 228 beds, cognitive impairment services</p>"},
+  {"id": "j31", "n": "Amica Oakville", "loc": "Oakville", "ph": "905-842-5100", "web": "", "site": "https://www.amica.ca/oakville", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oakville"], "pros": ["Full spectrum IL/AL/Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full spectrum IL/AL/Memory Care</p>"},
+  {"id": "j32", "n": "Sunrise of Oakville", "loc": "Oakville", "ph": "905-338-4554", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-oakville", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Oakville"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j33", "n": "Delmanor Glen Abbey", "loc": "Oakville", "ph": "905-469-3232", "web": "", "site": "https://delmanor.com/glen-abbey/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oakville"], "pros": ["MemoryPlus program, high-end amenities"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>MemoryPlus program, high-end amenities</p>"},
+  {"id": "j34", "n": "Peel Manor", "loc": "Brampton", "ph": "905-453-4140", "web": "", "site": "https://peelregion.ca/health/seniors/peel-long-term-care/our-long-term-care-centres", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "177", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Brampton"], "pros": ["Peel Region, Butterfly Model dementia care, Transitional Behavioural Support Unit"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Peel Region, Butterfly Model dementia care, Transitional Behavioural Support Unit</p>"},
+  {"id": "j35", "n": "Vera M Davis Centre", "loc": "Bolton/Caledon", "ph": "905-857-0975", "web": "", "site": "https://peelregion.ca/health/seniors/peel-long-term-care/our-long-term-care-centres", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Bolton/Caledon"], "pros": ["Peel Region, emotion-based dementia care model"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Peel Region, emotion-based dementia care model</p>"},
+  {"id": "j36", "n": "Burton Manor", "loc": "Brampton", "ph": "905-455-1601", "web": "", "site": "https://www.primacareliving.com/burton-manor", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Brampton"], "pros": ["Primacare, Butterfly Model dementia care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Primacare, Butterfly Model dementia care</p>"},
+  {"id": "j37", "n": "Sunrise of Mississauga", "loc": "Mississauga", "ph": "905-270-3800", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-mississauga", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Mississauga"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j38", "n": "Sunrise of Erin Mills", "loc": "Mississauga - Erin Mills", "ph": "905-607-5007", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-erin-mills", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Mississauga - Erin Mills"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j39", "n": "Amica Mississauga", "loc": "Mississauga", "ph": "905-566-5400", "web": "", "site": "https://www.amica.ca/mississauga", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Mississauga"], "pros": ["Full spectrum IL/AL/Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full spectrum IL/AL/Memory Care</p>"},
+  {"id": "j40", "n": "The Shores of Port Credit", "loc": "Mississauga - Port Credit", "ph": "905-274-6767", "web": "", "site": "https://verveseniorliving.com/the-shores-of-port-credit/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Mississauga - Port Credit"], "pros": ["Verve, builders of Canada's first dementia village, Lake Ontario views"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Verve, builders of Canada's first dementia village, Lake Ontario views</p>"},
+  {"id": "j41", "n": "Village of Erin Meadows", "loc": "Mississauga", "ph": "905-569-2922", "web": "", "site": "https://schlegelvillages.com/erin-meadows-mississauga", "cost": "$4,000-$8,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Mississauga"], "pros": ["Schlegel Villages, Emma's Neighbourhood memory care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Schlegel Villages, Emma's Neighbourhood memory care</p>"},
+  {"id": "j42", "n": "Silverthorn Care Community", "loc": "Mississauga", "ph": "905-820-8210", "web": "", "site": "https://www.siennaliving.ca/long-term-care/ontario/silverthorn-care-community", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Mississauga"], "pros": ["Sienna Living, near Credit Valley Hospital"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Sienna Living, near Credit Valley Hospital</p>"},
+  {"id": "j43", "n": "Bough Beeches Place", "loc": "Mississauga", "ph": "905-820-8893", "web": "", "site": "https://levanteliving.com/residences/bough-beeches-place/", "cost": "$4,000-$8,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Mississauga"], "pros": ["Memory care available"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Memory care available</p>"},
+  {"id": "j44", "n": "York Region Maple Health Centre", "loc": "Maple/Vaughan", "ph": "905-832-3300", "web": "", "site": "https://www.york.ca/health/seniors-services/long-term-care-homes", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Maple/Vaughan"], "pros": ["York Region operated, specializes in cognitive impairments"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>York Region operated, specializes in cognitive impairments</p>"},
+  {"id": "j45", "n": "York Region Newmarket Health Centre", "loc": "Newmarket", "ph": "905-895-1277", "web": "", "site": "https://www.york.ca/health/seniors-services/long-term-care-homes", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "132", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Newmarket"], "pros": ["York Region operated, 132 beds, cognitive impairment specialization"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>York Region operated, 132 beds, cognitive impairment specialization</p>"},
+  {"id": "j46", "n": "Southlake Residential Care Village", "loc": "Newmarket", "ph": "905-895-7661", "web": "", "site": "https://www.southlakecarevillage.com/", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "224", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Newmarket"], "pros": ["Non-profit, 224 beds, Alzheimer's Special Unit, accredited"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Non-profit, 224 beds, Alzheimer's Special Unit, accredited</p>"},
+  {"id": "j47", "n": "Amica Newmarket", "loc": "Newmarket", "ph": "905-898-2900", "web": "", "site": "https://www.amica.ca/newmarket", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Newmarket"], "pros": ["Full spectrum IL/AL/Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full spectrum IL/AL/Memory Care</p>"},
+  {"id": "j48", "n": "Sunrise of Aurora", "loc": "Aurora", "ph": "905-727-2952", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-aurora", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Aurora"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j49", "n": "Delmanor Aurora", "loc": "Aurora", "ph": "905-727-1234", "web": "", "site": "https://delmanor.com/aurora/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Aurora"], "pros": ["MemoryPlus program, wellness focus"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>MemoryPlus program, wellness focus</p>"},
+  {"id": "j50", "n": "Sunrise of Richmond Hill", "loc": "Richmond Hill", "ph": "905-883-1010", "web": "", "site": "https://www.sunriseseniorliving.ca/en/communities/on/sunrise-of-richmond-hill", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Richmond Hill"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j51", "n": "Delmanor Elgin Mills", "loc": "Richmond Hill", "ph": "905-770-7787", "web": "", "site": "https://delmanorelginmills.com/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Richmond Hill"], "pros": ["Dedicated memory care wing, beautifully landscaped, award-winning"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Dedicated memory care wing, beautifully landscaped, award-winning</p>"},
+  {"id": "j52", "n": "Mon Sheong Richmond Hill", "loc": "Richmond Hill", "ph": "905-883-9288", "web": "", "site": "https://www.monsheong.org/what-we-do/long-term-care-centre/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Richmond Hill"], "pros": ["Mon Sheong, CARF accredited, culturally appropriate Chinese care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Mon Sheong, CARF accredited, culturally appropriate Chinese care</p>"},
+  {"id": "j54", "n": "Sunrise of Unionville", "loc": "Markham - Unionville", "ph": "905-470-6700", "web": "", "site": "https://www.sunriseseniorliving.ca/communities/on/sunrise-of-unionville", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Direct admission", "wc": "wc-s", "tags": ["Memory Care", "Markham - Unionville"], "pros": ["AL & Memory Care, specialized dementia programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>AL & Memory Care, specialized dementia programs</p>"},
+  {"id": "j55", "n": "Yee Hong Markham", "loc": "Markham", "ph": "905-470-3988", "web": "", "site": "https://www.yeehong.com/centre/long-term-care/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "200", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Markham"], "pros": ["Yee Hong, 200 beds, Alzheimer unit, CARF accredited"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Yee Hong, 200 beds, Alzheimer unit, CARF accredited</p>"},
+  {"id": "j56", "n": "Mon Sheong Markham (NEW)", "loc": "Markham", "ph": "905-883-9288", "web": "", "site": "https://www.monsheong.org/capital-campaign/new-long-term-care-centres/", "cost": "~$2,100-$2,800/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "320", "wl": "Opens Fall 2026", "wc": "wc-s", "tags": ["Memory Care", "Markham"], "pros": ["NEW 320-bed facility, largest LTC in Markham, accepting applications now"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>NEW 320-bed facility, largest LTC in Markham, accepting applications now</p>"},
+  {"id": "j57", "n": "Memory & Company Markham", "loc": "Markham", "ph": "905-604-8444", "web": "", "site": "https://www.memoryandcompany.com/", "cost": "$7,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Markham"], "pros": ["Specialized memory care, comprehensive Alzheimer's/dementia focus"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Specialized memory care, comprehensive Alzheimer's/dementia focus</p>"},
+  {"id": "j58", "n": "Aspira Villa Da Vinci", "loc": "Vaughan", "ph": "905-856-3939", "web": "", "site": "https://www.aspiralife.ca/our-locations/ontario/vaughan/aspira-villa-da-vinci-retirement-living/", "cost": "$4,000-$8,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Vaughan"], "pros": ["Memory care services available"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Memory care services available</p>"},
+  {"id": "j59", "n": "Durham Region Fairview Lodge", "loc": "Whitby", "ph": "905-668-3388", "web": "", "site": "https://www.durham.ca/en/living-here/regional-long-term-care-homes.aspx", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "198", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Whitby"], "pros": ["Durham Region operated, 198 beds"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Durham Region operated, 198 beds</p>"},
+  {"id": "j60", "n": "Durham Region Hillsdale Estates", "loc": "Oshawa", "ph": "905-576-3068", "web": "", "site": "https://www.durham.ca/en/living-here/regional-long-term-care-homes.aspx", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "300", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["Durham Region, 300 beds, secured dementia unit for responsive behaviours"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Durham Region, 300 beds, secured dementia unit for responsive behaviours</p>"},
+  {"id": "j61", "n": "Durham Region Hillsdale Terraces", "loc": "Oshawa", "ph": "905-576-3068", "web": "", "site": "https://www.durham.ca/en/living-here/regional-long-term-care-homes.aspx", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "200", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["Durham Region operated, 200 beds"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Durham Region operated, 200 beds</p>"},
+  {"id": "j62", "n": "Durham Region Lakeview Manor", "loc": "Beaverton", "ph": "705-426-7308", "web": "", "site": "https://www.durham.ca/en/living-here/regional-long-term-care-homes.aspx", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "149", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Beaverton"], "pros": ["Durham Region operated, 149 beds"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Durham Region operated, 149 beds</p>"},
+  {"id": "j63", "n": "Lakeridge Gardens", "loc": "Ajax", "ph": "905-683-2320", "web": "", "site": "https://www.lh.ca/our-services/long-term-care/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "320", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Ajax"], "pros": ["NEW 320-bed, 2022 opening, rooftop dementia terrace, behavioural unit, dialysis on-site"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>NEW 320-bed, 2022 opening, rooftop dementia terrace, behavioural unit, dialysis on-site</p>"},
+  {"id": "j64", "n": "Village of Taunton Mills", "loc": "Whitby", "ph": "905-655-3930", "web": "", "site": "https://schlegelvillages.com/taunton-mills-whitby", "cost": "$4,000-$10,000/mo", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Whitby"], "pros": ["Schlegel, full continuum from apartments to memory care and LTC"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Schlegel, full continuum from apartments to memory care and LTC</p>"},
+  {"id": "j65", "n": "Amica Whitby", "loc": "Whitby", "ph": "905-665-6200", "web": "", "site": "https://www.amica.ca/whitby", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Whitby"], "pros": ["Full spectrum IL/AL/Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full spectrum IL/AL/Memory Care</p>"},
+  {"id": "j66", "n": "Amica Pickering", "loc": "Pickering", "ph": "905-839-2000", "web": "", "site": "https://www.amica.ca/pickering", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Pickering"], "pros": ["Full spectrum IL/AL/Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full spectrum IL/AL/Memory Care</p>"},
+  {"id": "j67", "n": "AMICA Taunton", "loc": "Ajax", "ph": "905-420-9900", "web": "", "site": "https://www.amica.ca/taunton", "cost": "$6,000-$12,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Ajax"], "pros": ["Full continuum from townhome condos to Memory Care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Full continuum from townhome condos to Memory Care</p>"},
+  {"id": "j68", "n": "Abbeylawn Manor", "loc": "Oshawa", "ph": "905-723-8810", "web": "", "site": "https://abbeylawnmanor.com/", "cost": "$4,000-$8,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["Largest memory care unit in Durham Region, two secure floors"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Largest memory care unit in Durham Region, two secure floors</p>"},
+  {"id": "j69", "n": "Sunnycrest Nursing Home", "loc": "Whitby", "ph": "905-668-5855", "web": "", "site": "https://www.sunnycrestnursinghome.ca/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Whitby"], "pros": ["LTC with dementia care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>LTC with dementia care</p>"},
+  {"id": "j70", "n": "Thorntonview Long Term Care", "loc": "Oshawa", "ph": "905-576-2577", "web": "", "site": "https://www.thorntonview.com/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["LTC with dementia care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>LTC with dementia care</p>"},
+  {"id": "j71", "n": "Extendicare Oshawa", "loc": "Oshawa", "ph": "905-576-1851", "web": "", "site": "https://www.extendicare.com/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["Extendicare, advanced dementia care and responsive behavior programs"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>Extendicare, advanced dementia care and responsive behavior programs</p>"},
+  {"id": "j72", "n": "Wynfield LTC Centre", "loc": "Oshawa", "ph": "905-721-4646", "web": "", "site": "https://www.extendicare.com/", "cost": "$2,036-$2,909/mo", "tier": 1, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Oshawa"], "pros": ["LTC with dementia care"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>LTC with dementia care</p>"},
+  {"id": "j74", "n": "Delmanor Prince Edward", "loc": "Etobicoke", "ph": "416-233-0725", "web": "", "site": "https://delmanorprinceward.com/", "cost": "$5,000-$10,000/mo (est)", "tier": 2, "src": "ex", "status": "pend", "score": 0, "bstar": null, "beds": "N/A", "wl": "Contact directly", "wc": "wc-s", "tags": ["Memory Care", "Etobicoke"], "pros": ["MemoryPlus program, stunning architecture"], "cons": [], "cpl": [], "notes": "", "details": "<p class=\"sec-label\">From June 2026 research</p><p>MemoryPlus program, stunning architecture</p>"}
 ];
 
 let userFacs = JSON.parse(localStorage.getItem('ecn_facs')||'[]');
@@ -1267,7 +1346,6 @@ function renderFacCard(f){
     <div class="fbody">
       <div><div class="fbt pros">✓ Strengths</div><ul class="dots">${(f.pros||[]).map(p=>`<li>${p}</li>`).join('')}</ul></div>
       <div><div class="fbt cons">⚠ Concerns</div><ul class="dots">${(f.cons||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
-      <div><div class="fbt cpl">♥ Couples</div><ul class="dots">${(f.cpl||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
       <div><div class="fbt wl">⏱ Waitlist</div><span class="wchip ${f.wc}">${f.wl}</span></div>
     </div>
     ${detailsSection}
@@ -1409,7 +1487,9 @@ function saveEdit(){
   localStorage.setItem('ecn_fac_edits', JSON.stringify(facEdits));
 
   // Also update cost and reviewedBy in their respective stores
-  if(edits.cost){
+  const _f = FACS.concat(userFacs).find(x=>x.id===id) || {};
+  const _prevCost = (costUpdates[id] && costUpdates[id].cost) || _f.cost || '';
+  if(edits.cost && edits.cost !== _prevCost){
     costUpdates[id] = {cost: edits.cost, date: new Date().toISOString().split('T')[0]};
     localStorage.setItem('ecn_costs', JSON.stringify(costUpdates));
   }
@@ -1430,12 +1510,12 @@ function saveEdit(){
 }
 
 function exportTracker(format){
-  const facs = allFacs();
+  const facs = allFacs().filter(f=>f.dem!==false);
   const stLbl = {star:'Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
   const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
   const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
 
-  const headers = ['Facility','Phone','Website','Source','Reviewed By','Status','Score','Cost','Waitlist','Notes'];
+  const headers = ['Facility','Type','Phone','Website','Source','Reviewed By','Status','Score','Cost','Waitlist / Stay','Notes'];
   const rows = facs.map(f=>{
     const costData = costUpdates[f.id];
     const costDisplay = costData ? costData.cost : f.cost;
@@ -1444,6 +1524,7 @@ function exportTracker(format){
     const reviewedBy = getReviewedBy(f.id) || f.reviewedBy || '';
     return [
       f.n,
+      'Long-term dementia',
       f.ph || '',
       f.site || '',
       srcLbl[f.src] || '',
@@ -1455,6 +1536,15 @@ function exportTracker(format){
       noteData.replace(/"/g,'""')
     ];
   });
+  if(typeof RESPITE!=='undefined'){
+    const key=rsGroup==='A'?'fitA':'fitB';
+    const stL=Object.fromEntries(RS_ST);
+    RESPITE.filter(r=>r[key]!=='Ruled out').forEach(r=>{
+      const t=rsTrack[r.id]||{};
+      const stay=[r.min&&r.min!=='Not stated'?'Min '+r.min:'',r.max&&r.max!=='Not stated'?'Max '+r.max:''].filter(Boolean).join(' / ');
+      rows.push([r.name,'Short-term respite',r.phone||'',r.web||'','Research Oct 25',RS_RV[t.rv]||'',stL[t.st||''],r[key],r.cost||'',stay,(t.note||'').replace(/"/g,'""')]);
+    });
+  }
 
   if(format === 'csv'){
     const csvContent = [headers.join(','), ...rows.map(r=>r.map(c=>`"${c}"`).join(','))].join('\n');
@@ -1559,6 +1649,7 @@ function showTab(id,btn){
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
+  const sf=document.querySelector('.source-filters'); if(sf) sf.style.display=(id==='facilities'||id==='tracker')?'':'none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -2096,7 +2187,29 @@ function rsSave(){try{localStorage.setItem('ecn_respite',JSON.stringify(rsTrack)
 function rsEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function setRsGroup(g){rsGroup=g;document.getElementById('rs-sw-A').classList.toggle('on',g==='A');document.getElementById('rs-sw-B').classList.toggle('on',g==='B');renderRespite();}
 function rsSet(id,key,val){rsTrack[id]=rsTrack[id]||{};rsTrack[id][key]=val;rsSave();renderRespite();if(typeof renderTracker==='function')renderTracker();}
-const RS_ST=[['','Not called'],['called','Called — waiting'],['bed','Bed available'],['tour','Tour booked'],['no','Said no / full']];
+const RS_ST=[['','Not called'],['called','Called — waiting'],['bed','Bed available'],['tour','Tour booked'],['qx','Visited — questions remain'],['like','Visited & liked'],['star','Standout'],['no','Said no / ruled out']];
+const RS_RV={ravi:'Ravi',nalini:'Nalini',both:'Both'};
+let rsModalId=null;
+function openRsModal(id){
+  const r=RESPITE.find(x=>x.id===id); if(!r) return; rsModalId=id;
+  const t=rsTrack[id]||{}, key=rsGroup==='A'?'fitA':'fitB';
+  document.getElementById('rs-m-title').textContent=r.name;
+  const row=(l,v)=>v&&v!=='Not stated'?'<div><b>'+l+':</b> '+rsEsc(v)+'</div>':'';
+  document.getElementById('rs-m-info').innerHTML='<div style="margin-bottom:6px;"><span class="fitpill '+(r[key]==='Ruled out'?'Ruled':r[key])+'">'+rsEsc(r[key])+'</span> '+rsEsc(rsGroup==='A'&&r.whyA?r.whyA:r.why)+'</div>'+
+    (r.web?'<a href="'+rsEsc(r.web)+'" target="_blank" rel="noopener">🌐 Website</a> · ':'')+(r.phone?'📞 '+rsEsc(r.phone):'')+
+    '<div class="rs-grid">'+row('Address',r.addr)+row('Contact',r.contact)+row('Dementia care',r.dementia)+row('Locked unit',r.secure)+row('Respite',r.respite)+row('Cost',r.cost)+row('Shortest stay',r.min)+row('Longest stay',r.max)+row('Before admission',r.req)+row('Watch-out',r.watch)+'</div>';
+  document.getElementById('rs-m-st').innerHTML=RS_ST.map(o=>'<option value="'+o[0]+'">'+o[1]+'</option>').join('');
+  document.getElementById('rs-m-st').value=t.st||'';
+  document.getElementById('rs-m-rv').value=t.rv||'';
+  document.getElementById('rs-m-note').value=t.note||'';
+  document.getElementById('rs-modal').classList.add('show');
+}
+function closeRsModal(){document.getElementById('rs-modal').classList.remove('show');rsModalId=null;}
+function saveRsModal(){
+  if(!rsModalId) return;
+  rsTrack[rsModalId]=Object.assign(rsTrack[rsModalId]||{},{st:document.getElementById('rs-m-st').value,rv:document.getElementById('rs-m-rv').value,note:document.getElementById('rs-m-note').value});
+  rsSave(); closeRsModal(); renderRespite(); if(typeof renderTracker==='function') renderTracker();
+}
 function trRespiteRows(trType, filter, search){
   if(trType==='ltc') return '';
   if(typeof currentFilter!=='undefined' && currentFilter!=='all') return '';
@@ -2104,7 +2217,7 @@ function trRespiteRows(trType, filter, search){
   let list=RESPITE.filter(r=>r[key]!=='Ruled out').filter(r=>{
     const st=(rsTrack[r.id]||{}).st||'';
     if(search && !(r.name+' '+r.addr+' '+r.area).toLowerCase().includes(search)) return false;
-    if(filter==='visited' && st!=='tour') return false;
+    if(filter==='visited' && !['qx','like','star'].includes(st)) return false;
     if(filter==='pending' && st!=='' && st!=='called') return false;
     if(filter==='shortlist' && r[key]!=='Strong') return false;
     return true;
@@ -2119,13 +2232,13 @@ function trRespiteRows(trType, filter, search){
       '<td><span class="stag ex" style="white-space:nowrap;">Short-term respite</span></td>'+
       '<td>'+(tel?'<a href="tel:'+tel.replace(/-/g,'')+'" style="white-space:nowrap;color:var(--teal);font-size:.78rem;">'+rsEsc(tel)+'</a>':'-')+'</td>'+
       '<td><span style="font-size:.72rem;color:var(--muted);">Research Oct 25</span></td>'+
-      '<td><span style="color:var(--muted);font-size:.75rem;">-</span></td>'+
+      '<td style="cursor:pointer;" onclick="openRsModal(\''+r.id+'\')">'+(t.rv?'<span class="stag '+(t.rv==='both'?'bo':t.rv==='ravi'?'br':'me')+'">'+RS_RV[t.rv]+'</span>':'<span style="color:var(--muted);font-size:.75rem;">-</span>')+'</td>'+
       '<td><select style="font-size:.75rem;" onchange="rsSet(\''+r.id+'\',\'st\',this.value)">'+RS_ST.map(o=>'<option value="'+o[0]+'"'+((t.st||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></td>'+
       '<td><span class="fitpill '+fit+'">'+fit+'</span></td>'+
       '<td style="font-size:.78rem;">'+rsEsc(r.cost||'-')+'</td>'+
       '<td style="font-size:.78rem;">'+rsEsc(stay)+'</td>'+
       '<td><input type="text" style="font-size:.75rem;width:140px;" placeholder="+ Add" value="'+rsEsc(t.note||'')+'" onchange="rsSet(\''+r.id+'\',\'note\',this.value)"></td>'+
-      '<td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" title="Open in Respite tab" onclick="showTab(\'respite\',document.querySelector(\'nav button:nth-child(2)\'));document.getElementById(\'rs-search\').value=\''+rsEsc(r.name).replace(/\'/g,'')+'\';document.getElementById(\'rs-fit\').value=\'all\';renderRespite();">→</button></td></tr>';
+      '<td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" title="Open record" onclick="openRsModal(\''+r.id+'\')">Open →</button></td></tr>';
   }).join('');
 }
 const FIT_RANK={'Strong':0,'Possible':1,'Unlikely':2,'Ruled out':3};
@@ -2163,8 +2276,8 @@ function renderRespite(){
       '<div class="rs-why">'+rsEsc(rsGroup==='A'&&r.whyA?r.whyA:r.why)+'</div>'+
       '<div class="rs-grid">'+row('Type',r.type)+row('Address',r.addr)+row('Contact',r.contact)+row('Hours',r.hours)+row('Dementia care',r.dementia)+row('Locked unit',r.secure)+row('Respite',r.respite)+row('Shortest stay',r.min)+row('Longest stay',r.max)+row('Before admission',r.req)+row('Ready by Friday?',r.friday)+row('Watch-out',r.watch)+'</div>'+
       '<div class="rs-track"><b>Our status:</b> <select onchange="rsSet(\''+r.id+'\',\'st\',this.value)">'+
-        [['','Not called'],['called','Called — waiting'],['bed','Bed available'],['tour','Tour booked'],['no','Said no / full']].map(o=>'<option value="'+o[0]+'"'+((t.st||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+
-      '</select><input type="text" placeholder="Notes — who you spoke to, what they said..." value="'+rsEsc(t.note||'')+'" onchange="rsSet(\''+r.id+'\',\'note\',this.value)"></div>'+
+        RS_ST.map(o=>'<option value="'+o[0]+'"'+((t.st||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+
+      '</select> <b>Reviewed by:</b> <select onchange="rsSet(\''+r.id+'\',\'rv\',this.value)">'+[['','—'],['ravi','Ravi'],['nalini','Nalini'],['both','Both']].map(o=>'<option value="'+o[0]+'"'+((t.rv||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select><input type="text" placeholder="Notes — who you spoke to, what they said..." value="'+rsEsc(t.note||'')+'" onchange="rsSet(\''+r.id+'\',\'note\',this.value)"></div>'+
     '</div>';
   }).join('') || '<div class="box info">Nothing matches these filters.</div>';
 }
