@@ -354,7 +354,7 @@ textarea{min-height:60px;resize:vertical;}
 </div>
 
 <nav id="nav">
-  <button class="active" onclick="showTab('facilities',this)">🏠 Long-Term Care</button>
+  <button class="active" onclick="showTab('facilities',this)">🏠 Long-Term Dementia Care</button>
   <button onclick="showTab('respite',this)">🛏 Short-Term Respite</button>
   <button onclick="showTab('tracker',this)">📋 My Tracker</button>
   <button onclick="showTab('decision',this)">🧭 What Next</button>
@@ -510,8 +510,8 @@ textarea{min-height:60px;resize:vertical;}
 <!-- TAB 1: FACILITIES -->
 <div id="tab-facilities" class="tab active">
   <div class="tab-purpose">Browse & Learn — read before visits, share with family</div>
-  <h2>Toronto & GTA Facilities Guide</h2>
-  <p class="s-intro">Compiled from two independent sources: a friend's ground-level family research (visits, scores, gut reactions) and a physician's curated rated list. Where sources overlap, both perspectives appear on the same card. Costs are approximate 2025-2026 figures.</p>
+  <h2>Long-Term Dementia Care</h2>
+  <p class="s-intro"><strong>Dementia care only</strong> — places with a dementia or memory care unit where Dad can live long term (updated Oct 25, 2026; places without memory care are hidden). Compiled from two independent sources: a friend's ground-level family research (visits, scores, gut reactions) and a physician's curated rated list. Where sources overlap, both perspectives appear on the same card. Costs are approximate 2025-2026 figures.</p>
 
   <div class="g2" style="margin-bottom:14px;">
     <div class="box info" style="margin-bottom:0;"><strong>🔍 Search Inspection Reports:</strong><br>
@@ -536,7 +536,6 @@ textarea{min-height:60px;resize:vertical;}
       <label>Show:</label>
       <select id="fac-filter" onchange="renderFacs()">
         <option value="all">All</option>
-        <option value="couples">Couples</option>
         <option value="visited">Visited</option>
         <option value="shortlist">4+ Stars</option>
       </select>
@@ -637,6 +636,13 @@ textarea{min-height:60px;resize:vertical;}
         <option value="shortlist">4+ Stars</option>
       </select>
       <div class="sep"></div>
+      <label>Type:</label>
+      <select id="tr-type" onchange="renderTracker()">
+        <option value="all">Both</option>
+        <option value="ltc">Long-term dementia</option>
+        <option value="resp">Short-term respite</option>
+      </select>
+      <div class="sep"></div>
       <input type="text" id="tr-search" placeholder="🔍 Search..." oninput="renderTracker()">
     </div>
   </div>
@@ -715,6 +721,7 @@ textarea{min-height:60px;resize:vertical;}
     <table class="tbl">
       <thead><tr>
         <th>Facility</th>
+        <th>Type</th>
         <th>Phone</th>
         <th>Source</th>
         <th>Reviewed By</th>
@@ -1138,7 +1145,7 @@ const FACS = [
   {id:'ex5',n:'Alexis Lodge',loc:'707 Ellesmere Rd, Scarborough',ph:'416-752-1923',web:'https://www.rhra.ca/en/register/',site:'https://www.alexislodge.com/',cost:'Contact for rates',tier:2,src:'ex',status:'pend',score:0,bstar:null,beds:'30',wl:'Contact directly',wc:'wc-o',tags:['30-Bed Dementia Home','25+ Years','Respite Available'],pros:['Specialized dementia care since 1999','Non-institutional approach','Day programs & respite available'],cons:['Small - 30 beds only'],cpl:['Small home - ask directly'],notes:'To research'},
   // === TIER 3: PREMIUM PRIVATE ===
   {id:'t3a',n:'The Briton House',loc:'720 Mt. Pleasant Rd, Toronto',ph:'416-487-3392',web:'https://www.rhra.ca/en/register/',site:'https://www.britonhouse.com/',cost:'$7,545-$9,145/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.8,beds:'N/A',wl:'Direct admission',wc:'wc-s',tags:['Family-Owned Since 1976','Memory Care Program','Safe Environment'],pros:['Brother TOP rated 4.8★','Family-owned 48+ years','Assisted Living Memory Care','Structured safe environment'],cons:['Memory care from $7,995+'],cpl:['Same building - shared meals'],notes:'Ask about South Asian programming',details:'<p class="sec-label">From Website</p><p><strong>Family-owned since 1976</strong> - Nearly 50 years of continuous operation by the same family. Exceptional stability and care philosophy.</p><p><strong>Memory Care Program:</strong> Structured daily routines, cognitive stimulation, reminiscence therapy, and safe wandering paths.</p><p><strong>All-Inclusive:</strong> Rates include accommodation, 3 meals + snacks, housekeeping, laundry, activities, and personal care assistance.</p><p><strong>Location:</strong> Quiet residential area on Mount Pleasant Road. Gardens and outdoor spaces. Near Sunnybrook Hospital.</p><p><strong>Couples:</strong> Both can live in the building even with different care needs. Shared meals and activities together.</p><p><strong>Cultural Programming:</strong> Ask about availability of South Asian dietary options and cultural activities.</p>'},
-  {id:'t3b',n:'Hazelton Place',loc:'111 Avenue Rd, Toronto',ph:'416-928-0111',web:'https://www.rhra.ca/en/register/',site:'https://verveseniorliving.com/hazelton-place/',cost:'$7,490-$15,000/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.5,beds:'unknown',wl:'Direct admission',wc:'wc-s',tags:['Verve Senior Living','Yorkville','Assisted Living Floor'],pros:['Brother 4.5★','Premium Yorkville location','Self-contained assisted living floor'],cons:['Very high cost','Limited availability'],cpl:['Ask about companion suites'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Operated by Verve Senior Living</strong> - One of Canada\'s largest senior living operators with 25+ communities.</p><p><strong>Premium Yorkville Location:</strong> Steps from galleries, boutiques, restaurants. Urban lifestyle for active seniors.</p><p><strong>Care Levels:</strong> Independent Living with option to add services. Dedicated Assisted Living floor with 24/7 care staff.</p><p><strong>Amenities:</strong> Fine dining, bistro, fitness centre, spa, rooftop terrace, library, art studio, concierge services.</p><p><strong>Healthcare:</strong> Registered staff on-site. Partnerships with nearby hospitals including Sunnybrook and Mount Sinai.</p><p><strong>Suites:</strong> Studio to 2-bedroom options. Some couples suites available - inquire about availability.</p>'},
+  {id:'t3b',dem:false,n:'Hazelton Place',loc:'111 Avenue Rd, Toronto',ph:'416-928-0111',web:'https://www.rhra.ca/en/register/',site:'https://verveseniorliving.com/hazelton-place/',cost:'$7,490-$15,000/mo',tier:3,src:'bo',status:'pend',score:0,bstar:4.5,beds:'unknown',wl:'Direct admission',wc:'wc-s',tags:['Verve Senior Living','Yorkville','Assisted Living Floor'],pros:['Brother 4.5★','Premium Yorkville location','Self-contained assisted living floor'],cons:['Very high cost','Limited availability'],cpl:['Ask about companion suites'],notes:'',details:'<p class="sec-label">From Website</p><p><strong>Operated by Verve Senior Living</strong> - One of Canada\'s largest senior living operators with 25+ communities.</p><p><strong>Premium Yorkville Location:</strong> Steps from galleries, boutiques, restaurants. Urban lifestyle for active seniors.</p><p><strong>Care Levels:</strong> Independent Living with option to add services. Dedicated Assisted Living floor with 24/7 care staff.</p><p><strong>Amenities:</strong> Fine dining, bistro, fitness centre, spa, rooftop terrace, library, art studio, concierge services.</p><p><strong>Healthcare:</strong> Registered staff on-site. Partnerships with nearby hospitals including Sunnybrook and Mount Sinai.</p><p><strong>Suites:</strong> Studio to 2-bedroom options. Some couples suites available - inquire about availability.</p>'},
   {id:'t3c',n:'Baycrest Terraces',loc:'55 Ameer Ave, Toronto',ph:'416-785-2379',web:'https://www.rhra.ca/en/register/',site:'https://www.baycrestterraces.com/',cost:'$18,000-$19,500/mo',tier:3,src:'br',status:'pend',score:0,bstar:4.1,beds:'182 suites',wl:'Contact directly',wc:'wc-m',tags:['Baycrest Research-Backed','Memory Care','Jewish/Kosher'],pros:['Brother 4.1★','182 suites - IL, AL, Memory Care','World-class neuroscience research'],cons:['HIGHEST cost: $18-19.5K','Kosher/Jewish focus'],cpl:['Multiple care levels on campus'],notes:'Email BaycrestTerraces@Baycrest.org',details:'<p class="sec-label">From Website</p><p><strong>Part of Baycrest</strong> - World-renowned academic health sciences centre specializing in aging and brain health.</p><p><strong>182 suites</strong> offering Independent Living, Assisted Living, and Memory Care on the same campus.</p><p><strong>Research-Backed Care:</strong> Programs developed by Baycrest\'s Rotman Research Institute. Access to clinical trials and latest dementia interventions.</p><p><strong>Memory Care:</strong> "Baycrest at Home" philosophy - familiar, home-like environment with specialized dementia programming.</p><p><strong>Jewish Heritage:</strong> Kosher dining, Jewish cultural programming, Shabbat observance. Open to all faiths but Jewish cultural focus.</p><p><strong>Healthcare:</strong> On-campus access to Baycrest Hospital, geriatric specialists, and allied health professionals.</p>'},
   {id:'t3d',n:'Sagecare',loc:'147 Elder St, Toronto',ph:'416-792-7243',web:'https://www.rhra.ca/en/register/',site:'https://www.sagecare.ca',cost:'$12,750-$16,000/mo',tier:3,src:'br',status:'pend',score:0,bstar:3.8,beds:'12',wl:'Contact directly',wc:'wc-o',tags:['Dementia-Only','1:4 Staff Ratio','Locked Pricing'],pros:['Dementia-only environment','1:4 staff ratio','No price escalation'],cons:['Brother lowest 3.8★','Small group home'],cpl:['Individual placement only'],notes:''},
 ];
@@ -1194,7 +1201,7 @@ function renderFacs(){
   let facs = allFacs().filter(f=>{
     if(search && !f.n.toLowerCase().includes(search) && !f.loc.toLowerCase().includes(search)) return false;
     if(currentFilter!=='all' && f.src!==currentFilter) return false;
-    if(filter==='couples' && (!f.cpl || f.cpl.length===0)) return false;
+    if(f.dem===false) return false;
     if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
     if(filter==='shortlist' && (f.score||0)<4 && (!f.bstar||f.bstar<4)) return false;
     return true;
@@ -1275,7 +1282,10 @@ function renderTracker(){
   const sort = document.getElementById('tr-sort').value;
   const filter = document.getElementById('tr-filter').value;
   const search = (document.getElementById('tr-search').value||'').toLowerCase();
+  const trType = (document.getElementById('tr-type')||{}).value||'all';
   let facs = allFacs().filter(f=>{
+    if(f.dem===false) return false;
+    if(trType==='resp') return false;
     if(search && !f.n.toLowerCase().includes(search) && !(f.loc||'').toLowerCase().includes(search)) return false;
     if(currentFilter!=='all' && f.src!==currentFilter) return false;
     if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
@@ -1309,6 +1319,7 @@ function renderTracker(){
     const revDisplay = reviewedBy ? `<span class="stag ${reviewedBy==='both'?'bo':reviewedBy==='ravi'?'br':'me'}">${revLbl[reviewedBy]||'-'}</span>` : '<span style="color:var(--muted);font-size:.75rem;">-</span>';
     return `<tr>
       <td><strong>${nameLink}</strong></td>
+      <td><span class="stag br" style="white-space:nowrap;">Long-term dementia</span></td>
       <td>${phoneDisplay}</td>
       <td><span class="stag ${f.src}">${srcLbl[f.src]||''}</span></td>
       <td style="cursor:pointer;" onclick="openReviewedByModal('${f.id}')">${revDisplay}</td>
@@ -1319,7 +1330,7 @@ function renderTracker(){
       <td><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openNotesModal('${f.id}')">${notePreview}</button></td>
       <td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openEditModal('${f.id}')">✎</button>${f._u?`<button class="btn btn-d" onclick="removeFac('${f.id}')">✕</button>`:''}</td>
     </tr>`;
-  }).join('');
+  }).join('') + (typeof trRespiteRows==='function' ? trRespiteRows(trType, filter, search) : '');
   popEvalSel();
   updateProgress();
 }
@@ -2084,7 +2095,39 @@ try{rsTrack=JSON.parse(localStorage.getItem('ecn_respite')||'{}');}catch(e){rsTr
 function rsSave(){try{localStorage.setItem('ecn_respite',JSON.stringify(rsTrack));}catch(e){}}
 function rsEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function setRsGroup(g){rsGroup=g;document.getElementById('rs-sw-A').classList.toggle('on',g==='A');document.getElementById('rs-sw-B').classList.toggle('on',g==='B');renderRespite();}
-function rsSet(id,key,val){rsTrack[id]=rsTrack[id]||{};rsTrack[id][key]=val;rsSave();if(key==='st')renderRespite();}
+function rsSet(id,key,val){rsTrack[id]=rsTrack[id]||{};rsTrack[id][key]=val;rsSave();renderRespite();if(typeof renderTracker==='function')renderTracker();}
+const RS_ST=[['','Not called'],['called','Called — waiting'],['bed','Bed available'],['tour','Tour booked'],['no','Said no / full']];
+function trRespiteRows(trType, filter, search){
+  if(trType==='ltc') return '';
+  if(typeof currentFilter!=='undefined' && currentFilter!=='all') return '';
+  const key=rsGroup==='A'?'fitA':'fitB';
+  let list=RESPITE.filter(r=>r[key]!=='Ruled out').filter(r=>{
+    const st=(rsTrack[r.id]||{}).st||'';
+    if(search && !(r.name+' '+r.addr+' '+r.area).toLowerCase().includes(search)) return false;
+    if(filter==='visited' && st!=='tour') return false;
+    if(filter==='pending' && st!=='' && st!=='called') return false;
+    if(filter==='shortlist' && r[key]!=='Strong') return false;
+    return true;
+  });
+  list.sort((a,b)=>(FIT_RANK[a[key]]-FIT_RANK[b[key]])||(BAND_RANK[a.band]-BAND_RANK[b.band])||a.name.localeCompare(b.name));
+  return list.map(r=>{
+    const t=rsTrack[r.id]||{}, fit=r[key];
+    const tel=(r.phone.match(/\d{3}-\d{3}-\d{4}|1-8\d\d-\d{3}-\d{4}/)||[''])[0];
+    const nm=r.web?'<a href="'+rsEsc(r.web)+'" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:underline;">'+rsEsc(r.name)+'</a>':rsEsc(r.name);
+    const stay=[r.min&&r.min!=='Not stated'?'Min '+r.min:'',r.max&&r.max!=='Not stated'?'Max '+r.max:''].filter(Boolean).join(' · ')||'-';
+    return '<tr><td><strong>'+nm+'</strong><div style="font-size:.72rem;color:var(--muted);">'+rsEsc(r.area)+'</div></td>'+
+      '<td><span class="stag ex" style="white-space:nowrap;">Short-term respite</span></td>'+
+      '<td>'+(tel?'<a href="tel:'+tel.replace(/-/g,'')+'" style="white-space:nowrap;color:var(--teal);font-size:.78rem;">'+rsEsc(tel)+'</a>':'-')+'</td>'+
+      '<td><span style="font-size:.72rem;color:var(--muted);">Research Oct 25</span></td>'+
+      '<td><span style="color:var(--muted);font-size:.75rem;">-</span></td>'+
+      '<td><select style="font-size:.75rem;" onchange="rsSet(\''+r.id+'\',\'st\',this.value)">'+RS_ST.map(o=>'<option value="'+o[0]+'"'+((t.st||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></td>'+
+      '<td><span class="fitpill '+fit+'">'+fit+'</span></td>'+
+      '<td style="font-size:.78rem;">'+rsEsc(r.cost||'-')+'</td>'+
+      '<td style="font-size:.78rem;">'+rsEsc(stay)+'</td>'+
+      '<td><input type="text" style="font-size:.75rem;width:140px;" placeholder="+ Add" value="'+rsEsc(t.note||'')+'" onchange="rsSet(\''+r.id+'\',\'note\',this.value)"></td>'+
+      '<td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" title="Open in Respite tab" onclick="showTab(\'respite\',document.querySelector(\'nav button:nth-child(2)\'));document.getElementById(\'rs-search\').value=\''+rsEsc(r.name).replace(/\'/g,'')+'\';document.getElementById(\'rs-fit\').value=\'all\';renderRespite();">→</button></td></tr>';
+  }).join('');
+}
 const FIT_RANK={'Strong':0,'Possible':1,'Unlikely':2,'Ruled out':3};
 const BAND_RANK={'Central Toronto':0,'Inner Toronto':1,'Just outside Toronto':2,'Outer GTA':3,'':4};
 function renderRespite(){
@@ -2125,7 +2168,7 @@ function renderRespite(){
     '</div>';
   }).join('') || '<div class="box info">Nothing matches these filters.</div>';
 }
-document.addEventListener('DOMContentLoaded',renderRespite);
+document.addEventListener('DOMContentLoaded',()=>{renderRespite();if(typeof renderTracker==='function')renderTracker();});
 </script>
 </body>
 </html>
