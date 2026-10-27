@@ -631,6 +631,15 @@ textarea{min-height:60px;resize:vertical;}
       <option value="star">Standout</option>
       <option value="no">Said no / ruled out</option>
     </select>
+    <select id="rs-rv" onchange="renderRespite()" title="Reviewed by">
+      <option value="all">Anyone</option>
+      <option value="nalini">Nalini</option>
+      <option value="nalini+">Nalini (incl. Both)</option>
+      <option value="ravi">Ravi</option>
+      <option value="ravi+">Ravi (incl. Both)</option>
+      <option value="both">Both</option>
+      <option value="none">Not yet reviewed</option>
+    </select>
     <input type="text" id="rs-search" placeholder="🔍 Search" oninput="renderRespite()">
   </div>
   <div class="rs-count" id="rs-count"></div>
@@ -643,39 +652,48 @@ textarea{min-height:60px;resize:vertical;}
   <h2>My Facility Tracker</h2>
   <p class="s-intro">Every facility your network has researched. Add new ones, update costs after calling, expand notes. Click any cost to verify and update it.</p>
 
-  <div style="margin-bottom:14px;">
-    <div class="filter-bar">
-      <label>Sort:</label>
-      <select id="tr-sort" onchange="renderTracker()">
-        <option value="name">Name</option>
-        <option value="score">Score</option>
-        <option value="status">Status</option>
-        <option value="cost">Cost</option>
-        <option value="source">Source</option>
-        <option value="reviewedby">Reviewed By</option>
-        <option value="waitlist">Waitlist</option>
-      </select>
-      <div class="sep"></div>
-      <label>Show:</label>
-      <select id="tr-filter" onchange="renderTracker()">
-        <option value="all">All</option>
-        <option value="visited">Visited</option>
-        <option value="pending">Pending</option>
-        <option value="shortlist">4+ Stars</option>
-      </select>
-      <div class="sep"></div>
-      <label>Type:</label>
-      <select id="tr-type" onchange="renderTracker()">
-        <option value="all">Both</option>
-        <option value="ltc">Long-term dementia</option>
-        <option value="resp">Short-term respite</option>
-      </select>
-      <div class="sep"></div>
-      <input type="text" id="tr-search" placeholder="🔍 Search..." oninput="renderTracker()">
-    </div>
+  <div class="rs-bar">
+    <select id="tr-st" onchange="renderTracker()" title="Status">
+      <option value="all">Any status</option>
+      <option value="none">Not contacted yet</option>
+      <option value="called">Called — waiting</option>
+      <option value="wait">Waiting for response</option>
+      <option value="bed">Bed available</option>
+      <option value="tour">Tour booked</option>
+      <option value="qx">Visited — questions remain</option>
+      <option value="like">Visited &amp; liked</option>
+      <option value="star">Standout</option>
+      <option value="no">Ruled out / said no</option>
+    </select>
+    <select id="tr-rv" onchange="renderTracker()" title="Reviewed by">
+      <option value="all">Anyone</option>
+      <option value="nalini">Nalini</option>
+      <option value="nalini+">Nalini (incl. Both)</option>
+      <option value="ravi">Ravi</option>
+      <option value="ravi+">Ravi (incl. Both)</option>
+      <option value="both">Both</option>
+      <option value="none">Not yet reviewed</option>
+    </select>
+    <select id="tr-type" onchange="renderTracker()" title="Type">
+      <option value="all">Long-term + respite</option>
+      <option value="ltc">Long-term dementia</option>
+      <option value="resp">Short-term respite</option>
+    </select>
+    <select id="tr-sort" onchange="renderTracker()" title="Sort">
+      <option value="name">Sort: Name</option>
+      <option value="status">Sort: Status</option>
+      <option value="reviewedby">Sort: Reviewed by</option>
+      <option value="score">Sort: Score</option>
+      <option value="cost">Sort: Cost</option>
+      <option value="source">Sort: Source</option>
+      <option value="waitlist">Sort: Waitlist</option>
+    </select>
+    <input type="text" id="tr-search" placeholder="🔍 Search" oninput="renderTracker()">
+    <button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;flex:0 0 auto;" onclick="clearTrFilters()">Clear</button>
   </div>
-  
-  <details class="add-panel" id="add-panel">
+  <div class="rs-count" id="tr-count"></div>
+
+<details class="add-panel" id="add-panel">
     <summary>+ Add a New Facility</summary>
     <div class="inner">
       <div class="fg3">
@@ -743,8 +761,8 @@ textarea{min-height:60px;resize:vertical;}
   </details>
   
   <div style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;">
-    <button class="btn btn-s" onclick="exportTracker('csv')">📥 Export CSV</button>
-    <button class="btn btn-s" onclick="exportTracker('clipboard')">📋 Copy to Clipboard</button>
+    <button class="btn btn-s" onclick="exportTracker('csv')">📥 Export what's shown (CSV)</button>
+    <button class="btn btn-s" onclick="exportTracker('clipboard')">📋 Copy what's shown</button>
   </div>
   <div class="tr-wrap">
     <table class="tbl">
@@ -1363,10 +1381,22 @@ function renderFacCard(f){
 
 function parseCost(c){ const m=(c||'').match(/\$?([\d,]+)/); return m?parseInt(m[1].replace(/,/g,'')):99999; }
 
+function trLtcStatus(st){ return ({pend:'none',booked:'tour'})[st] || st || 'none'; }
+function trRsStatus(st){ return st ? st : 'none'; }
+function trStatusMatch(key, f){ return f==='all' || key===f; }
+function trReviewerMatch(rv, f){
+  if(f==='all') return true;
+  if(f==='none') return !rv;
+  if(f==='nalini+') return rv==='nalini'||rv==='both';
+  if(f==='ravi+') return rv==='ravi'||rv==='both';
+  return rv===f;
+}
+function clearTrFilters(){ ['tr-st','tr-rv','tr-type'].forEach(id=>document.getElementById(id).value='all'); document.getElementById('tr-search').value=''; renderTracker(); }
 function renderTracker(){
   const tb = document.getElementById('tr-body');
   const sort = document.getElementById('tr-sort').value;
-  const filter = document.getElementById('tr-filter').value;
+  const stF = document.getElementById('tr-st').value;
+  const rvF = document.getElementById('tr-rv').value;
   const search = (document.getElementById('tr-search').value||'').toLowerCase();
   const trType = (document.getElementById('tr-type')||{}).value||'all';
   let facs = allFacs().filter(f=>{
@@ -1374,11 +1404,11 @@ function renderTracker(){
     if(trType==='resp') return false;
     if(search && !f.n.toLowerCase().includes(search) && !(f.loc||'').toLowerCase().includes(search)) return false;
     if(currentFilter!=='all' && f.src!==currentFilter) return false;
-    if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
-    if(filter==='pending' && f.status!=='pend' && f.status!=='booked' && f.status!=='wait') return false;
-    if(filter==='shortlist' && (f.score||0)<4 && (!f.bstar||f.bstar<4)) return false;
+    if(!trStatusMatch(trLtcStatus(f.status), stF)) return false;
+    if(!trReviewerMatch(getReviewedBy(f.id)||f.reviewedBy||'', rvF)) return false;
     return true;
   });
+  window.trShownLtc = facs.map(f=>f.id);
   if(sort==='score') facs.sort((a,b)=>(Math.max(b.score||0,b.bstar||0))-(Math.max(a.score||0,a.bstar||0)));
   else if(sort==='status') facs.sort((a,b)=>({star:1,like:2,booked:3,qx:4,wait:5,pend:6,no:7}[a.status]||6)-({star:1,like:2,booked:3,qx:4,wait:5,pend:6,no:7}[b.status]||6));
   else if(sort==='cost') facs.sort((a,b)=>parseCost(a.cost)-parseCost(b.cost));
@@ -1388,7 +1418,7 @@ function renderTracker(){
   else facs.sort((a,b)=>a.n.localeCompare(b.n));
 
   const stMap = {star:'sp-star',like:'sp-like',qx:'sp-qx',no:'sp-no',pend:'sp-pend',booked:'sp-booked',wait:'sp-wait'};
-  const stLbl = {star:'★ Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked',wait:'Waiting for Response'};
+  const stLbl = {star:'★ Standout',like:'Visited & Liked',qx:'Visited — Questions Remain',no:'Ruled Out',pend:'Not Yet Visited',booked:'Tour Booked',wait:'Waiting for Response'};
   const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
 
   const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
@@ -1417,7 +1447,9 @@ function renderTracker(){
       <td><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openNotesModal('${f.id}')">${notePreview}</button></td>
       <td class="actions"><button class="btn btn-s" style="font-size:.72rem;padding:3px 8px;" onclick="openEditModal('${f.id}')">✎</button>${f._u?`<button class="btn btn-d" onclick="removeFac('${f.id}')">✕</button>`:''}</td>
     </tr>`;
-  }).join('') + (typeof trRespiteRows==='function' ? trRespiteRows(trType, filter, search) : '');
+  }).join('') + (typeof trRespiteRows==='function' ? trRespiteRows(trType, stF, rvF, search) : '');
+  const nL=(window.trShownLtc||[]).length, nR=(window.trShownResp||[]).length;
+  const cnt=document.getElementById('tr-count'); if(cnt) cnt.textContent=(nL+nR)+' places shown ('+nL+' long-term dementia, '+nR+' short-term respite)'+((stF!=='all'||rvF!=='all'||trType!=='all'||search)?' · filtered — Export gives just these':'');
   popEvalSel();
   updateProgress();
 }
@@ -1519,7 +1551,9 @@ function saveEdit(){
 }
 
 function exportTracker(format){
-  const facs = allFacs().filter(f=>f.dem!==false);
+  renderTracker();
+  const shownL = window.trShownLtc || [], shownR = window.trShownResp || [];
+  const facs = shownL.map(id=>allFacs().find(f=>f.id===id)).filter(Boolean);
   // labels match what is shown on screen
   const stLbl = {pend:'Not Yet Visited',wait:'Waiting for Response',booked:'Tour Booked',qx:'Visited — Questions Remain',like:'Visited & Liked',star:'Standout',no:'Ruled Out'};
   const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
@@ -1535,7 +1569,7 @@ function exportTracker(format){
   if(typeof RESPITE!=='undefined'){
     const key=rsGroup==='A'?'fitA':'fitB';
     const stL=Object.fromEntries(RS_ST);
-    RESPITE.filter(r=>r[key]!=='Ruled out').forEach(r=>{
+    shownR.map(id=>RESPITE.find(r=>r.id===id)).filter(Boolean).forEach(r=>{
       const t=rsTrack[r.id]||{};
       const stay=[r.min&&r.min!=='Not stated'?'Min '+r.min:'',r.max&&r.max!=='Not stated'?'Max '+r.max:''].filter(Boolean).join(' / ');
       rows.push([r.name,'Short-term respite',stL[t.st||'']||'Not called',RS_RV[t.rv]||'',t.note||'',
@@ -2209,18 +2243,19 @@ function saveRsModal(){
   rsTrack[rsModalId]=Object.assign(rsTrack[rsModalId]||{},{st:document.getElementById('rs-m-st').value,rv:document.getElementById('rs-m-rv').value,note:document.getElementById('rs-m-note').value});
   rsSave(); closeRsModal(); renderRespite(); if(typeof renderTracker==='function') renderTracker();
 }
-function trRespiteRows(trType, filter, search){
+function trRespiteRows(trType, stF, rvF, search){
+  window.trShownResp=[];
   if(trType==='ltc') return '';
   if(typeof currentFilter!=='undefined' && currentFilter!=='all') return '';
   const key=rsGroup==='A'?'fitA':'fitB';
   let list=RESPITE.filter(r=>r[key]!=='Ruled out').filter(r=>{
     const st=(rsTrack[r.id]||{}).st||'';
     if(search && !(r.name+' '+r.addr+' '+r.area).toLowerCase().includes(search)) return false;
-    if(filter==='visited' && !['qx','like','star'].includes(st)) return false;
-    if(filter==='pending' && st!=='' && st!=='called' && st!=='wait') return false;
-    if(filter==='shortlist' && r[key]!=='Strong') return false;
+    if(!trStatusMatch(trRsStatus(st), stF)) return false;
+    if(!trReviewerMatch((rsTrack[r.id]||{}).rv||'', rvF)) return false;
     return true;
   });
+  window.trShownResp = list.map(r=>r.id);
   list.sort((a,b)=>(FIT_RANK[a[key]]-FIT_RANK[b[key]])||(BAND_RANK[a.band]-BAND_RANK[b.band])||a.name.localeCompare(b.name));
   return list.map(r=>{
     const t=rsTrack[r.id]||{}, fit=r[key];
@@ -2246,7 +2281,7 @@ const FIT_RANK={'Strong':0,'Possible':1,'Unlikely':2,'Ruled out':3};
 const BAND_RANK={'Central Toronto':0,'Inner Toronto':1,'Just outside Toronto':2,'Outer GTA':3,'':4};
 function renderRespite(){
   const fitSel=document.getElementById('rs-fit').value, band=document.getElementById('rs-band').value,
-        grp=document.getElementById('rs-grp').value, st=document.getElementById('rs-st').value,
+        grp=document.getElementById('rs-grp').value, st=document.getElementById('rs-st').value, rvSel=(document.getElementById('rs-rv')||{}).value||'all',
         q=document.getElementById('rs-search').value.toLowerCase();
   const key=rsGroup==='A'?'fitA':'fitB';
   let list=RESPITE.filter(r=>{
@@ -2256,6 +2291,7 @@ function renderRespite(){
     if(band!=='all' && r.band!==band) return false;
     if(grp!=='all' && r.group!==grp) return false;
     if(st!=='all' && (t.st||'')!==st) return false;
+    if(typeof trReviewerMatch==='function' && !trReviewerMatch(t.rv||'', rvSel)) return false;
     if(q && !(r.name+' '+r.area+' '+r.addr+' '+r.type).toLowerCase().includes(q)) return false;
     return true;
   });
