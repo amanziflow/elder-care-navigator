@@ -54,6 +54,9 @@ nav button:hover{color:rgba(255,255,255,.88);}
 nav button.active{color:var(--gold-l);border-bottom-color:var(--gold-l);}
 
 
+/* TRACKER: status under name */
+.tr-under{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;cursor:pointer;}
+.tr-edit{font-size:.7rem;color:var(--teal);font-weight:600;text-decoration:underline;}
 /* RESPITE TAB */
 .rs-bar{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;align-items:center;background:white;border:1px solid var(--border);border-radius:6px;padding:5px 8px;margin-bottom:6px;box-shadow:var(--shadow);scrollbar-width:thin;}
 .rs-bar select,.rs-bar input{border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:.76rem;font-family:'Source Sans 3',sans-serif;flex:0 0 auto;max-width:150px;}
@@ -1401,7 +1404,8 @@ function renderTracker(){
     const reviewedBy = getReviewedBy(f.id) || f.reviewedBy || '';
     const revDisplay = reviewedBy ? `<span class="stag ${reviewedBy==='both'?'bo':reviewedBy==='ravi'?'br':'me'}">${revLbl[reviewedBy]||'-'}</span>` : '<span style="color:var(--muted);font-size:.75rem;">-</span>';
     return `<tr>
-      <td><strong>${nameLink}</strong></td>
+      <td><strong>${nameLink}</strong>
+        <div class="tr-under" onclick="openEditModal('${f.id}')" title="Tap to change status / reviewer"><span class="sp ${stMap[f.status]||'sp-pend'}">${stLbl[f.status]||'Pending'}</span> ${reviewedBy?revDisplay:''} <span class="tr-edit">✎ change</span></div></td>
       <td><span class="stag br" style="white-space:nowrap;">Long-term dementia</span></td>
       <td>${phoneDisplay}</td>
       <td><span class="stag ${f.src}">${srcLbl[f.src]||''}</span></td>
@@ -2233,7 +2237,9 @@ function trRespiteRows(trType, filter, search){
     const tel=(r.phone.match(/\d{3}-\d{3}-\d{4}|1-8\d\d-\d{3}-\d{4}/)||[''])[0];
     const nm=r.web?'<a href="'+rsEsc(r.web)+'" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:underline;">'+rsEsc(r.name)+'</a>':rsEsc(r.name);
     const stay=[r.min&&r.min!=='Not stated'?'Min '+r.min:'',r.max&&r.max!=='Not stated'?'Max '+r.max:''].filter(Boolean).join(' · ')||'-';
-    return '<tr><td><strong>'+nm+'</strong><div style="font-size:.72rem;color:var(--muted);">'+rsEsc(r.area)+'</div></td>'+
+    const stTxt=(RS_ST.find(o=>o[0]===(t.st||''))||RS_ST[0])[1];
+    return '<tr><td><strong>'+nm+'</strong><div style="font-size:.72rem;color:var(--muted);">'+rsEsc(r.area)+'</div>'+
+      '<div class="tr-under" onclick="openRsModal(\''+r.id+'\')" title="Tap to change status / reviewer"><span class="sp '+(t.st?'sp-wait':'sp-pend')+'">'+rsEsc(stTxt)+'</span> '+(t.rv?'<span class="stag '+(t.rv==='both'?'bo':t.rv==='ravi'?'br':'me')+'">'+RS_RV[t.rv]+'</span>':'')+' <span class="tr-edit">✎ change</span></div></td>'+
       '<td><span class="stag ex" style="white-space:nowrap;">Short-term respite</span></td>'+
       '<td>'+(tel?'<a href="tel:'+tel.replace(/-/g,'')+'" style="white-space:nowrap;color:var(--teal);font-size:.78rem;">'+rsEsc(tel)+'</a>':'-')+'</td>'+
       '<td><span style="font-size:.72rem;color:var(--muted);">Research Oct 25</span></td>'+
