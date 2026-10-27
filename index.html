@@ -212,6 +212,7 @@ table.tbl .actions{display:flex;gap:6px;align-items:center;}
 .sp-no{background:var(--red);color:white;}
 .sp-pend{background:#888;color:white;}
 .sp-booked{background:var(--blue);color:white;}
+.sp-wait{background:var(--purple-p);color:var(--purple);border:1px solid #c9b8e8;}
 
 .sdot{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:white;}
 .s5{background:#2e7d5a;}.s4{background:#3aa6a6;}.s3{background:var(--orange);}.s2{background:#c26a20;}.s1{background:var(--red);}.s0{background:#ccc;color:#666;}
@@ -500,6 +501,7 @@ textarea{min-height:60px;resize:vertical;}
         <div><label class="fl">Status</label>
           <select id="edit-status">
             <option value="pend">Not Yet Visited</option>
+            <option value="wait">Waiting for Response</option>
             <option value="booked">Tour Booked</option>
             <option value="qx">Visited — Questions Remain</option>
             <option value="like">Visited & Liked</option>
@@ -619,6 +621,7 @@ textarea{min-height:60px;resize:vertical;}
       <option value="">Not called</option>
       <option value="called">Called — waiting</option>
       <option value="bed">Bed available</option>
+      <option value="wait">Waiting for response</option>
       <option value="tour">Tour booked</option>
       <option value="qx">Visited — questions remain</option>
       <option value="like">Visited & liked</option>
@@ -701,6 +704,7 @@ textarea{min-height:60px;resize:vertical;}
         <div><label class="fl">Status</label>
           <select id="af-status">
             <option value="pend">Not Yet Visited</option>
+            <option value="wait">Waiting for Response</option>
             <option value="booked">Tour Booked</option>
             <option value="qx">Visited — Questions Remain</option>
             <option value="like">Visited & Liked</option>
@@ -1368,20 +1372,20 @@ function renderTracker(){
     if(search && !f.n.toLowerCase().includes(search) && !(f.loc||'').toLowerCase().includes(search)) return false;
     if(currentFilter!=='all' && f.src!==currentFilter) return false;
     if(filter==='visited' && !['star','like','qx'].includes(f.status)) return false;
-    if(filter==='pending' && f.status!=='pend' && f.status!=='booked') return false;
+    if(filter==='pending' && f.status!=='pend' && f.status!=='booked' && f.status!=='wait') return false;
     if(filter==='shortlist' && (f.score||0)<4 && (!f.bstar||f.bstar<4)) return false;
     return true;
   });
   if(sort==='score') facs.sort((a,b)=>(Math.max(b.score||0,b.bstar||0))-(Math.max(a.score||0,a.bstar||0)));
-  else if(sort==='status') facs.sort((a,b)=>({star:1,like:2,booked:3,qx:4,pend:5,no:6}[a.status]||5)-({star:1,like:2,booked:3,qx:4,pend:5,no:6}[b.status]||5));
+  else if(sort==='status') facs.sort((a,b)=>({star:1,like:2,booked:3,qx:4,wait:5,pend:6,no:7}[a.status]||6)-({star:1,like:2,booked:3,qx:4,wait:5,pend:6,no:7}[b.status]||6));
   else if(sort==='cost') facs.sort((a,b)=>parseCost(a.cost)-parseCost(b.cost));
   else if(sort==='source') facs.sort((a,b)=>(a.src||'').localeCompare(b.src||''));
   else if(sort==='reviewedby') facs.sort((a,b)=>{const ra=getReviewedBy(a.id)||a.reviewedBy||''; const rb=getReviewedBy(b.id)||b.reviewedBy||''; return ra.localeCompare(rb);});
   else if(sort==='waitlist') facs.sort((a,b)=>parseWaitlist(a.wl)-parseWaitlist(b.wl));
   else facs.sort((a,b)=>a.n.localeCompare(b.n));
 
-  const stMap = {star:'sp-star',like:'sp-like',qx:'sp-qx',no:'sp-no',pend:'sp-pend',booked:'sp-booked'};
-  const stLbl = {star:'★ Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
+  const stMap = {star:'sp-star',like:'sp-like',qx:'sp-qx',no:'sp-no',pend:'sp-pend',booked:'sp-booked',wait:'sp-wait'};
+  const stLbl = {star:'★ Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked',wait:'Waiting for Response'};
   const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
 
   const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
@@ -1512,7 +1516,7 @@ function saveEdit(){
 
 function exportTracker(format){
   const facs = allFacs().filter(f=>f.dem!==false);
-  const stLbl = {star:'Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked'};
+  const stLbl = {star:'Standout',like:'Liked',qx:'Questions',no:'Ruled Out',pend:'Pending',booked:'Tour Booked',wait:'Waiting for Response'};
   const srcLbl = {fr:'Friend',br:'Ravi',bo:'Both',me:'Mine',ex:'Exploring'};
   const revLbl = {ravi:'Ravi',nalini:'Nalini',both:'Both'};
 
@@ -2188,7 +2192,7 @@ function rsSave(){try{localStorage.setItem('ecn_respite',JSON.stringify(rsTrack)
 function rsEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function setRsGroup(g){rsGroup=g;document.getElementById('rs-sw-A').classList.toggle('on',g==='A');document.getElementById('rs-sw-B').classList.toggle('on',g==='B');renderRespite();}
 function rsSet(id,key,val){rsTrack[id]=rsTrack[id]||{};rsTrack[id][key]=val;rsSave();renderRespite();if(typeof renderTracker==='function')renderTracker();}
-const RS_ST=[['','Not called'],['called','Called — waiting'],['bed','Bed available'],['tour','Tour booked'],['qx','Visited — questions remain'],['like','Visited & liked'],['star','Standout'],['no','Said no / ruled out']];
+const RS_ST=[['','Not called'],['called','Called — waiting'],['wait','Waiting for response'],['bed','Bed available'],['tour','Tour booked'],['qx','Visited — questions remain'],['like','Visited & liked'],['star','Standout'],['no','Said no / ruled out']];
 const RS_RV={ravi:'Ravi',nalini:'Nalini',both:'Both'};
 let rsModalId=null;
 function openRsModal(id){
@@ -2219,7 +2223,7 @@ function trRespiteRows(trType, filter, search){
     const st=(rsTrack[r.id]||{}).st||'';
     if(search && !(r.name+' '+r.addr+' '+r.area).toLowerCase().includes(search)) return false;
     if(filter==='visited' && !['qx','like','star'].includes(st)) return false;
-    if(filter==='pending' && st!=='' && st!=='called') return false;
+    if(filter==='pending' && st!=='' && st!=='called' && st!=='wait') return false;
     if(filter==='shortlist' && r[key]!=='Strong') return false;
     return true;
   });
